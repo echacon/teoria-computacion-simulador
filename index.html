@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Autómatas y Sistemas Comunicantes</title>
+    <meta name="description" content="Simulador y plataforma educativa interactiva para Teoría de la Computación, Autómatas, Lenguajes Formales y Procesos Cooperantes concurrentes.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Barra superior / Header -->
+        <header class="app-header">
+            <div class="header-logo">
+                <span class="logo-icon">⚙️</span>
+                <div class="logo-text">
+                    <h1>Teoría de la Computación</h1>
+                    <p>Autómatas, Lenguajes y Procesos Cooperantes</p>
+                </div>
+            </div>
+            
+            <nav class="module-nav" id="main-navigation">
+                <button class="nav-tab active" data-target="module1" id="btn-tab-m1">
+                    <span class="tab-num">01</span>
+                    <span class="tab-label">Combinatorio & Decisiones</span>
+                </button>
+                <button class="nav-tab" data-target="module2" id="btn-tab-m2">
+                    <span class="tab-num">02</span>
+                    <span class="tab-label">Autómatas Finitos</span>
+                </button>
+                <button class="nav-tab" data-target="module3" id="btn-tab-m3">
+                    <span class="tab-num">03</span>
+                    <span class="tab-label">Autómatas de Pila</span>
+                </button>
+                <button class="nav-tab" data-target="module4" id="btn-tab-m4">
+                    <span class="tab-num">04</span>
+                    <span class="tab-label">Procesos Cooperantes</span>
+                </button>
+            </nav>
+
+            <div class="header-actions">
+                <button class="btn-toggle-sidebar" id="btn-theory-toggle" title="Mostrar/Ocultar Guía Teórica">
+                    <span class="btn-icon">📖</span> Teoria
+                </button>
+            </div>
+        </header>
+
+        <!-- Contenedor Principal (SPA) -->
+        <div class="app-body">
+            <main class="main-content" id="app-container">
+                <!-- El contenido de los módulos se inyectará dinámicamente aquí -->
+            </main>
+
+            <!-- Panel Teórico Lateral -->
+            <aside class="theory-sidebar" id="theory-sidebar">
+                <div class="sidebar-header">
+                    <h2>Guía Teórica de Aprendizaje</h2>
+                    <button class="btn-close-sidebar" id="btn-theory-close">&times;</button>
+                </div>
+                <div class="sidebar-scroll" id="theory-content">
+                    <!-- El contenido de la teoría cambiará según el módulo seleccionado -->
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Scripts de la aplicación -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
