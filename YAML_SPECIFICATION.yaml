@@ -1,0 +1,119 @@
+# Especificación YAML para Descripción de Workflows (DES)
+
+Esta especificación describe la sintaxis formal en YAML que los estudiantes utilizarán para describir sus procesos de negocio o manufactura, los recursos involucrados, la evolución mediante eventos y el flujo recursivo de los tokens de producto.
+
+---
+
+## Estructura Base del Modelo
+
+La especificación se basa en tres pilares:
+1.  **Recursos:** Dónde se realiza la transformación (personas, máquinas, sistemas).
+2.  **Proceso:** La secuencia de transiciones lógicas disparadas por eventos.
+3.  **Producto (Token):** La entidad física o datos que viaja de recurso en recurso y almacena el estado de avance.
+4.  **Recursividad:** Un proceso local dentro de un recurso se describe exactamente con esta misma estructura.
+
+---
+
+## Ejemplo Completo de Especificación YAML
+
+A continuación se presenta un modelo jerárquico de ensamble y pintura:
+
+```yaml
+# 1. Identificación del Proceso de Nivel Superior
+proceso: "Ensamble_Vehiculos"
+
+# 2. Definición del Producto y su Token de Estado
+producto:
+  nombre: "Chasis_Vehiculo"
+  token:
+    id: "TK-901"
+    estado: "MateriaPrima" # Estado inicial del token
+
+# 3. Recursos Disponibles
+recursos:
+  - id: "R1"
+    nombre: "Estacion_Soldadura"
+    tipo: "Maquina"
+    
+    # RECURSIVIDAD: El proceso dentro de este recurso se describe de la misma manera
+    sub_proceso:
+      proceso: "Soldadura_Detallada"
+      producto:
+        nombre: "Puntos_Soldadura"
+        token:
+          id: "TK-901-Sub"
+          estado: "SinSoldar"
+      recursos:
+        - id: "R1.1"
+          nombre: "Brazo_Robot"
+          tipo: "Dispositivo"
+      eventos:
+        - id: "e_brazo_mover"
+          nombre: "Mover brazo robot"
+          controlable: true
+        - id: "e_brazo_soldar"
+          nombre: "Soldar punto"
+          controlable: true
+      transiciones:
+        - de: "SinSoldar"
+          evento: "e_brazo_mover"
+          a: "EnPosicion"
+        - de: "EnPosicion"
+          evento: "e_brazo_soldar"
+          a: "SoldaduraCompletada" # Sub-Estado Marcado
+
+  - id: "R2"
+    nombre: "Estacion_Pintura"
+    tipo: "Maquina"
+
+# 4. Alfabeto de Eventos Globales
+eventos:
+  - id: "e_cargar"
+    nombre: "Llegada de materia prima"
+    controlable: true
+  - id: "e_soldadura"
+    nombre: "Ejecutar Soldadura en R1"
+    controlable: true
+  - id: "e_pintura"
+    nombre: "Ejecutar Pintura en R2"
+    controlable: true
+  - id: "e_falla"
+    nombre: "Falla eléctrica en planta"
+    controlable: false # Evento incontrolable para el supervisor
+  - id: "e_despachar"
+    nombre: "Despacho final del producto"
+    controlable: true
+
+# 5. Transiciones y evolución del Token por los Recursos
+transiciones:
+  - de: "MateriaPrima"
+    evento: "e_cargar"
+    recurso: "R1"
+    a: "ListoParaSoldar"
+
+  - de: "ListoParaSoldar"
+    evento: "e_soldadura"
+    recurso: "R1"
+    a: "EstructuraSoldada" # Requiere la finalización del sub_proceso de R1
+
+  - de: "EstructuraSoldada"
+    evento: "e_pintura"
+    recurso: "R2"
+    a: "ListoParaDespacho"
+
+  - de: "ListoParaDespacho"
+    evento: "e_despachar"
+    a: "Entregado" # Estado Marcado (Aceptación del Producto)
+```
+
+---
+
+## Semántica de Interpretación para el Motor
+
+Cuando los estudiantes programen su intérprete (motor DES) en los hitos del curso, la lógica de simulación deberá seguir estas reglas sobre el archivo YAML parseado:
+
+1.  **Inicialización:** El sistema inicia con el token del producto en su `estado` inicial (`MateriaPrima`).
+2.  **Habilitación de Eventos:** El motor busca en el listado de `transiciones` cuáles están habilitadas partiendo del estado actual del token.
+3.  **Consumo de Recursos:** Al ocurrir una transición asociada a un recurso (ej: `recurso: "R1"`), dicho recurso pasa a estado **Ocupado**.
+4.  **Resolución de Recursividad (Holones):** Si el recurso tiene un `sub_proceso`, la transición global `e_soldadura` no se considera completada de forma inmediata. El motor debe "descender" e iniciar la simulación del sub-proceso interno hasta que el sub-token alcance su estado marcado (`SoldaduraCompletada`), momento en el cual el recurso `R1` se libera y el token superior avanza a `EstructuraSoldada`.
+5.  **Lenguaje Marcado:** El ciclo finaliza exitosamente cuando el token superior alcanza el estado final de las transiciones (`Entregado`), perteneciendo la secuencia a la traza marcada del lenguaje.
