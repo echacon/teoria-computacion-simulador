@@ -2,6 +2,7 @@ import { initModule1, destroyModule1 } from './module1.js';
 import { initModule2, destroyModule2 } from './module2.js';
 import { initModule3, destroyModule3 } from './module3.js';
 import { initModule4, destroyModule4 } from './module4.js';
+import { initModuleLab1, destroyModuleLab1 } from './module_lab1.js';
 
 // Base de datos de contenido teórico por módulo
 const THEORY_CONTENT = {
@@ -82,6 +83,26 @@ const THEORY_CONTENT = {
                 <p>Las máquinas de la fábrica se envían piezas y señales de control para manufacturar productos físicos.</p>
             </div>
         </div>
+    `,
+    module_lab1: `
+        <div class="theory-section">
+            <h3>Práctica de Laboratorio 1</h3>
+            <p><strong>Objetivo:</strong> Modelar en consola y simular de forma visual el ciclo operacional de un <strong>Recurso Único</strong> como Sistema de Eventos Discretos (DES).</p>
+            <p><strong>La Estación de Pintura</strong></p>
+            <p>Su espacio de estados discretos incluye:</p>
+            <ul>
+                <li><code>OCIOSO</code>: Estado inicial, el recurso espera material.</li>
+                <li><code>LISTO</code>: La pieza ha sido cargada con éxito.</li>
+                <li><code>PINTANDO</code>: El recurso realiza la operación dinámica de valor añadido.</li>
+                <li><code>FALLA_TEMPORAL</code>: La máquina reporta un fallo que requiere atención.</li>
+                <li><code>COMPLETADO</code>: El producto ha finalizado de forma correcta (estado marcado de éxito).</li>
+                <li><code>FALLA_CRITICA</code>: El recurso entra en bloqueo irrecuperable por sobrecalentamiento (estado marcado de fallo).</li>
+            </ul>
+        </div>
+        <div class="theory-section">
+            <h3>Enfoque Ontológico en YAML</h3>
+            <p>En el panel lateral de control puedes descargar la especificación <code>recurso.yaml</code>. Nota cómo se estructuran formalmente las <em>transiciones</em> y los <em>eventos</em> (controlables vs. incontrolables) bajo una misma ontología descriptiva homogénea.</p>
+        </div>
     `
 };
 
@@ -138,6 +159,10 @@ function switchTab(targetModuleId) {
         case 'module4':
             appState.activeInitializer = initModule4;
             appState.activeDestroyer = destroyModule4;
+            break;
+        case 'module_lab1':
+            appState.activeInitializer = initModuleLab1;
+            appState.activeDestroyer = destroyModuleLab1;
             break;
         default:
             console.error('Módulo no reconocido:', targetModuleId);
