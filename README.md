@@ -11,27 +11,25 @@ El simulador web (SPA) está estructurado en 4 módulos progresivos:
 1. **01. Combinatorio & Decisiones:** Simulación de funciones estáticas sin estado (\(y = x \cdot b\)) y lógica condicional si-entonces.
 2. **02. Autómatas Finitos (DFA):** Procesamiento de cadenas binarias paso a paso sobre un grafo de estados interactivo.
 3. **03. Autómatas de Pila (PDA):** Representación del reconocimiento de lenguajes libres de contexto con visualización animada de una **Pila física (LIFO)**.
-4. **04. Procesos Cooperantes (Concurrencia & Workflows):** Simulación de paso de mensajes síncronos entre procesos. Incluye un selector de **Skins (Pieles)**:
-   * **Perspectiva de Negocios (ERP/BPMN):** Flujos de trabajo entre oficinas (Ventas, Finanzas, Despacho) y documentos.
-   * **Perspectiva de Producción (MOM/MES):** Flujos de trabajo entre estaciones de planta (Alimentador, Horno CNC, Inspección) y piezas físicas.
+4. **04. Procesos Cooperantes (Concurrencia & Workflows):** Simulación de paso de mensajes síncronos entre procesos.
+5. **Lab. Recurso Único (DFA):** Simulador interactivo del ciclo operacional de una Estación de Pintura, que lanza errores de transiciones y permite descargar la especificación YAML.
 
 ---
 
-## 🚀 Cómo Probar la Aplicación
+## 🛠️ Prácticas de Código de Laboratorio (Consola)
 
-### Opción A: Directamente en la Web (GitHub Pages)
-Si este repositorio está desplegado en GitHub Pages, puedes probar la plataforma al instante accediendo a la URL pública proporcionada por tu profesor.
+El repositorio incluye una plantilla en Python para que los estudiantes comiencen a programar su propio motor de transiciones local de recurso único (Hito 1):
 
-### Opción B: Ejecución Local
-Si has clonado este repositorio en tu computadora:
+*   **[recurso.py](./recurso.py):** Código base de la clase `DFA` en Python que carga una especificación YAML y procesa eventos de forma interactiva en consola.
+*   **[recurso.yaml](./recurso.yaml):** Archivo de ontología que modela el proceso de la Estación de Pintura.
 
-1. Abre tu terminal en esta carpeta.
-2. Ejecuta el servidor web local ultraligero de Node.js:
+Para ejecutar la simulación de consola local:
+1. Asegúrate de tener Python 3 y `pyyaml` instalados (`pip install pyyaml`).
+2. Abre tu terminal en esta carpeta y ejecuta:
    ```bash
-   node server.js
+   python recurso.py
    ```
-3. Abre en tu navegador la dirección:
-   👉 **http://localhost:3000**
+3. Introduce los eventos por consola (ej: `cargar`, `iniciar`, `fin`) para ver evolucionar el estado del autómata en tiempo real.
 
 ---
 
@@ -41,6 +39,7 @@ El repositorio incluye el material teórico y curricular desarrollado para el se
 
 * 📄 **[SYLLABUS_14_WEEKS.md](./SYLLABUS_14_WEEKS.md):** Plan semestral semana a semana, detallando las clases teóricas y los 4 hitos prácticos del proyecto integrador (Construcción del Motor de Transiciones y el Supervisor Automático).
 * 📖 **[THEORY_GUIDE.md](./THEORY_GUIDE.md):** Compendio de teoría del curso, desde gramáticas formales y BNF hasta Sistemas de Eventos Discretos (DES), Lenguajes Marcados ($L_m$) y la Teoría de Control Supervisor de Ramadge-Wonham.
+* 📋 **[YAML_SPECIFICATION.md](./YAML_SPECIFICATION.md):** Guía de sintaxis y ontología estructurada en YAML para modelar Procesos, Recursos y Productos de forma jerárquica.
 
 ---
 

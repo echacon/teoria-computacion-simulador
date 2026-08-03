@@ -1,0 +1,47 @@
+recurso: "Estacion_Pintura"
+tipo: "Maquina_De_Pintura"
+estado_inicial: "OCIOSO"
+estados_finales:
+  exito:
+    - "COMPLETADO"
+  falla:
+    - "FALLA_CRITICA"
+
+eventos:
+  - id: "cargar"
+    controlable: true
+  - id: "iniciar"
+    controlable: true
+  - id: "fin"
+    controlable: true
+  - id: "detectar_falla"
+    controlable: false
+  - id: "reparar"
+    controlable: true
+  - id: "sobrecalentar"
+    controlable: false
+  - id: "despachar"
+    controlable: true
+
+transiciones:
+  - de: "OCIOSO"
+    evento: "cargar"
+    a: "LISTO"
+  - de: "LISTO"
+    evento: "iniciar"
+    a: "PINTANDO"
+  - de: "PINTANDO"
+    evento: "fin"
+    a: "COMPLETADO"
+  - de: "PINTANDO"
+    evento: "detectar_falla"
+    a: "FALLA_TEMPORAL"
+  - de: "FALLA_TEMPORAL"
+    evento: "reparar"
+    a: "LISTO"
+  - de: "FALLA_TEMPORAL"
+    evento: "sobrecalentar"
+    a: "FALLA_CRITICA"
+  - de: "COMPLETADO"
+    evento: "despachar"
+    a: "OCIOSO"
