@@ -38,7 +38,9 @@ const moduleHTML = `
 <div class="module-container">
     <div class="module-intro">
         <h2>Módulo 3: Autómatas de Pila (PDA)</h2>
-        <p>Los autómatas con estados finitos no pueden contar más allá de su número de estados. Para reconocer lenguajes estructurados como <strong>aⁿbⁿ</strong> (mismo número de 'a' que de 'b'), necesitamos memoria externa. Un PDA añade una <strong>Pila LIFO (Last-In, First-Out)</strong> para almacenar símbolos temporalmente.</p>
+        <p>Los autómatas finitos no pueden validar estructuras anidadas ni conteos ilimitados. Un PDA añade una memoria <strong>Pila LIFO (Last-In, First-Out)</strong> con dos aplicaciones clave:</p>
+        <p>1. <strong>En el Parser:</strong> Valida la indentación y bloques anidados de <strong>YAML/JSON</strong> (PUSH al aumentar sangría, POP al cerrarla).<br>
+        2. <strong>En la Planta:</strong> Valida <strong>sub-procesos holónicos balanceados</strong> (<code>a</code> = abrir fase, <code>b</code> = cerrar fase, requiriendo que toda fase abierta se cierre en orden inverso estricto).</p>
     </div>
 
     <!-- Cinta de Entrada -->

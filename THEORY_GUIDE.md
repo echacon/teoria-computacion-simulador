@@ -132,19 +132,35 @@ Al procesarse la cinta de entrada, el lenguaje del problema crece carácter por 
 
 ---
 
+### Pipeline de Procesamiento: Del Archivo a la Ejecución
+Antes de que un flujo de trabajo se ejecute en la planta o en el software, transita por cuatro niveles formales:
+1. **Descripción Textual (YAML / BNF):** Especificación del proceso.
+2. **Validación Sintáctica (PDA Sintáctico):** Valida la gramática del formato (niveles de indentación, claves y delimitadores).
+3. **Validación Ontológica / Semántica:** Valida que lo descrito tenga sentido físico y operacional ($q \in Q$, $F \subseteq Q$, capacidades ontológicas del tipo de recurso).
+4. **Modelo en Memoria:** Instanciación del autómata formal (tupla en RAM).
+5. **Motor en Ejecución (DES / PDA Operacional):** Intérprete que procesa eventos en tiempo real.
+
+---
+
 ## Módulo 3: Autómatas de Pila (PDA) y Contexto
 
 Los autómatas finitos tienen memoria estrictamente acotada por la cardinalidad de \(Q\). No pueden resolver tareas que requieran contar de forma ilimitada o validar estructuras anidadas recursivamente (como el lenguaje \(a^n b^n\) o bloques de código anidados).
 
-### Pila Física (LIFO) y Recursividad de Procesos
-El PDA añade una memoria de acceso restringido en el tope: **Last-In, First-Out (LIFO)**.
-*   **Relación con workflows:** Se asocia directamente al concepto de **recursividad de recursos**. Un paso en un recurso se desarrolla internamente como un flujo de trabajo subordinado (sub-holón), requiriendo un almacenamiento en pila de los estados de retorno.
+### El Doble Rol de la Pila (LIFO)
+La Pila (*Last-In, First-Out*) opera en dos momentos esenciales del sistema:
+1. **En Software (Parser de YAML):** El analizador sintáctico utiliza un **PDA** para hacer PUSH al aumentar la indentación de bloques anidados y POP al cerrarlos. Sin un PDA, no se puede parsear un archivo estructurado en YAML o JSON.
+2. **En Planta (Sub-workflows Holónicos):** El motor utiliza una **Pila de Contextos** para hacer PUSH del estado padre al invocar un sub-proceso recursivo y POP al retornar a la línea principal tras concluir con éxito.
 
-### Definición Formal del PDA
+### Definición Formal del PDA (7-Tupla)
 \[P = (Q, \Sigma, \Gamma, \delta, q_0, Z_0, F)\]
 
-Donde \(\Gamma\) es el alfabeto de la pila y \(Z_0\) el símbolo base. La función de transición opera como:
-\[\delta: Q \times (\Sigma \cup \{\epsilon\}) \times \Gamma \to \mathcal{P}(Q \times \Gamma^*)\]
+Donde:
+* \(Q\): Estados de control del recurso/proceso.
+* \(\Sigma\): Alfabeto de eventos de entrada.
+* \(\Gamma\): Alfabeto de la memoria de pila (sub-procesos y marcadores).
+* \(Z_0 \in \Gamma\): Símbolo de fondo de pila.
+* \(\delta: Q \times (\Sigma \cup \{\epsilon\}) \times \Gamma \to \mathcal{P}(Q \times \Gamma^*)\): Función de transición extendida.
+* \(F \subseteq Q\): Estados de aceptación.
 
 ---
 

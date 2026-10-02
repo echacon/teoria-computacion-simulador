@@ -47,14 +47,20 @@ const THEORY_CONTENT = {
     module3: `
         <div class="theory-section">
             <h3>Autómatas de Pila (PDA)</h3>
-            <p>Los autómatas de estados finitos no pueden contar de forma ilimitada (ej. no pueden reconocer el lenguaje <code>aⁿbⁿ</code>) porque su memoria de estados es finita.</p>
-            <p>Para resolver esto, se añade una memoria no acotada pero estructurada llamada <strong>Pila (Stack)</strong> que funciona bajo el principio LIFO (Last-In, First-Out).</p>
-            <p>La función de transición ahora considera el tope de la pila y define qué apilar (push) o desapilar (pop):</p>
+            <p>Los autómatas de estados finitos no pueden contar de forma ilimitada ni validar anidamientos (ej. el lenguaje <code>aⁿbⁿ</code>) porque su memoria de estados es finita.</p>
+            <p>Para resolver esto, se añade una memoria no acotada pero estructurada: la <strong>Pila (Stack / LIFO)</strong>.</p>
             <div class="math-block">δ: Q × (Σ ∪ {ε}) × Γ → Q × Γ*</div>
         </div>
         <div class="theory-section">
-            <h3>Lenguajes Libres de Contexto</h3>
-            <p>Estos autómatas reconocen los lenguajes libres de contexto. Son esenciales para el análisis sintáctico de lenguajes de programación, ya que permiten modelar estructuras jerárquicas como paréntesis anidados o bloques de código condicionales anidados.</p>
+            <h3>El Doble Rol de la Pila</h3>
+            <div class="concept-card">
+                <h4>1. En el Parser (Nivel Sintáctico)</h4>
+                <p>El analizador de <strong>YAML / JSON</strong> utiliza un PDA para validar los niveles de indentación y bloques anidados (PUSH al aumentar la sangría, POP al cerrarla).</p>
+            </div>
+            <div class="concept-card">
+                <h4>2. En la Planta (Nivel Operacional)</h4>
+                <p>El motor de ejecución usa la pila para gestionar <strong>sub-workflows holónicos</strong>: PUSH del contexto padre al iniciar un sub-proceso y POP al retornar.</p>
+            </div>
         </div>
     `,
     module4: `

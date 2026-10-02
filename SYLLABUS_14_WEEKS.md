@@ -11,10 +11,14 @@ Utilizar la teoría de la computación y sus formalismos para lograr tener aplic
 ## 💡 Justificación del Enfoque
 La automatización, simulación y supervisión de flujos de trabajo se fundamenta en los siguientes puntos clave:
 1. **Modelado como DES:** Un Flujo de Trabajo es una secuencia de tareas que siguen unas reglas que pueden ser modeladas como un sistema a eventos discretos (DES).
-2. **Representación Dual:** El flujo de trabajo se describe gráficamente (como un autómata) o mediante un lenguaje formal.
+2. **Representación Dual y Pipeline de Validación:** El flujo se describe en un metalenguaje formal (YAML/BNF). Antes de ejecutarse, transita por dos filtros indispensables:
+   * *Validación Sintáctica:* Verificación gramatical del formato mediante un Autómata de Pila (PDA sintáctico del parser).
+   * *Validación Ontológica/Semántica:* Coherencia de dominio (existencia de estados $q \in Q$, inclusión $F \subseteq Q$, capacidades físicas del tipo de recurso).
 3. **Validación Formal:** El flujo de trabajo se valida mediante simulación para determinar que logre un cometido (ausencia de bloqueos, terminación).
 4. **Descentralización y Holones:** El sistema se compone de recursos autónomos. Cada recurso tiene su propio motor de transiciones local. El producto (portador del token de estado) se transmite entre los recursos cooperantes (Sistemas Holónicos).
-5. **Recursividad de Recursos:** Un paso del flujo de trabajo de un recurso se puede desarrollar internamente como otro flujo de trabajo jerárquico subordinado.
+5. **Recursividad y Doble Rol de la Pila:** La estructura de Pila (LIFO / Tipo 2) opera en dos niveles:
+   * *En Software:* Permite al parser de YAML/JSON procesar sangrías y bloques anidados.
+   * *En Planta:* Permite al motor gestionar sub-workflows jerárquicos y sub-holones (PUSH al entrar al sub-proceso, POP al retornar).
 6. **Concurrencia y Redes de Petri:** La sincronización de recursos y el paralelismo explícito se modelan y analizan formalmente mediante Redes de Petri.
 
 ---
@@ -39,10 +43,10 @@ La automatización, simulación y supervisión de flujos de trabajo se fundament
     *   *Teoría:* La 5-tupla formal. Diagramas de transición y tablas de estado como workflows secuenciales con lazos locales.
     *   *Práctica:* Diseño de DFA para validar secuencias de operaciones de usuarios o procesos locales.
 *   **Semana 5: Lenguajes Regulares y Crecimiento de Cadenas**
-    *   *Teoría:* Gramáticas regulares lineales a la derecha/izquierda. Cinta de entrada e historial de ejecución.
+    *   *Teoría:* Gramáticas regulares lineales a la derecha/izquierda. Cinta de entrada e historial de ejecución. Expresiones regulares en Python y SQL.
     *   *Práctica:* Codificación de transiciones de un DFA local.
 *   **Semana 6: Hito del Proyecto - Motor FSA Local**
-    *   *Teoría:* Serialización de grafos de procesos en formato estructurado (YAML/JSON).
+    *   *Teoría:* Serialización de grafos de procesos en formato estructurado (YAML/JSON). Arquitectura del intérprete genérico.
     *   *Hito de Laboratorio (Entregable 1):* Construir el cargador de especificaciones YAML/JSON y el motor de transiciones local del recurso para procesar eventos secuenciales.
 
 ---
@@ -50,9 +54,9 @@ La automatización, simulación y supervisión de flujos de trabajo se fundament
 ### Bloque 3: Memoria Estructurada, Pila y Recursividad (Semanas 7-9)
 
 *   **Semana 7: La Limitación de los FSA y la Recursividad**
-    *   *Teoría:* Lenguajes no regulares. Lema del Bombeo. Un paso de un workflow que se desarrolla internamente en un recurso como otro sub-workflow subordinado (Holón).
+    *   *Teoría:* Lenguajes no regulares. Lema del Bombeo ($a^n b^n$). El límite de la memoria finita ante estructuras anidadas y balances de recursos.
 *   **Semana 8: Autómatas de Pila (PDA) y Lenguajes Libres de Contexto**
-    *   *Teoría:* La estructura de Pila (LIFO). Definición formal del PDA (7-tupla). Operaciones de PUSH y POP.
+    *   *Teoría:* La estructura de Pila (LIFO). Definición formal del PDA (7-tupla). Operaciones PUSH y POP. El doble rol de la Pila: validación sintáctica de indentación en YAML vs. gestión operacional de sub-holones recursivos.
     *   *Práctica:* Validación de jerarquías de procesos y sub-holones balanceados.
 *   **Semana 9: Hito del Proyecto - El Motor PDA**
     *   *Hito de Laboratorio (Entregable 2):* Extender el motor del proyecto para incorporar la pila física y evaluar transiciones complejas de sub-procesos recursivos.
