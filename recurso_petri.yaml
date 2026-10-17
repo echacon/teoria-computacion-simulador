@@ -1,0 +1,138 @@
+# ==============================================================================
+# ESPECIFICACIÓN DE RED DE PETRI (FORMALISMO Y ONTO-PROCESO)
+# Celda de Mecanizado con Torno CNC Compartido e Inspección de Calidad
+# ==============================================================================
+
+proceso: "Celda_Mecanizado_CNC"
+version: "1.0"
+descripcion: "Modelo formal de eventos discretos para manufactura con recurso compartido y retrabajo"
+
+# ------------------------------------------------------------------------------
+# 1. LUGARES (P): Estados de Proceso y Recursos del Sistema
+# ------------------------------------------------------------------------------
+lugares:
+  - id: "p_in"
+    nombre: "Bandeja_Entrada_Piezas"
+    tipo: "proceso"
+    tokens_iniciales: 1
+    descripcion: "Pieza de materia prima lista para ser procesada"
+
+  - id: "p_torno"
+    nombre: "Torno_CNC_Disponible"
+    tipo: "recurso"
+    tokens_iniciales: 1
+    descripcion: "Capacidad de la máquina CNC (1 = libre, 0 = ocupado)"
+
+  - id: "p_mecanizado"
+    nombre: "Pieza_En_Torneado"
+    tipo: "proceso"
+    tokens_iniciales: 0
+    descripcion: "Operación de maquinado activo en ejecución"
+
+  - id: "p_insp"
+    nombre: "Buffer_Inspeccion"
+    tipo: "proceso"
+    tokens_iniciales: 0
+    descripcion: "Pieza maquinada esperando control de calidad"
+
+  - id: "p_inspector"
+    nombre: "Inspector_Disponible"
+    tipo: "recurso"
+    tokens_iniciales: 1
+    descripcion: "Analista de calidad libre para auditar pieza"
+
+  - id: "p_retrabajo"
+    nombre: "Cola_Retrabajo"
+    tipo: "proceso"
+    tokens_iniciales: 0
+    descripcion: "Pieza no conforme devuelta para corrección dimensional"
+
+  - id: "p_fin"
+    nombre: "Almacen_Producto_Terminado"
+    tipo: "proceso"
+    tokens_iniciales: 0
+    descripcion: "Sumidero final: pieza conforme aprobada"
+
+# ------------------------------------------------------------------------------
+# 2. TRANSICIONES (T): Actividades, Decisiones y Sincronizaciones
+# ------------------------------------------------------------------------------
+transiciones:
+  - id: "t_iniciar_torno"
+    nombre: "Cargar_y_Montar"
+    trigger: "INICIAR_MECANIZADO"
+    duracion_nominal: 2 # minutos
+    descripcion: "Montaje de pieza en husillo con torno libre"
+
+  - id: "t_fin_torno"
+    nombre: "Fin_Torneado_CNC"
+    trigger: "SENSOR_MECANIZADO_LISTO"
+    duracion_nominal: 15 # minutos
+    descripcion: "Ciclo de maquinado completado; libera el torno"
+
+  - id: "t_aprobar"
+    nombre: "Aprobar_Control_Calidad"
+    trigger: "INSPECCION_OK"
+    duracion_nominal: 5 # minutos
+    descripcion: "Pieza cumple tolerancias; pasa al sumidero final"
+
+  - id: "t_rechazar"
+    nombre: "Rechazar_Defectuoso"
+    trigger: "INSPECCION_RECHAZO"
+    duracion_nominal: 5 # minutos
+    descripcion: "Insumo o corte defectuoso; deriva a cola de retrabajo"
+
+  - id: "t_reingreso_retrabajo"
+    nombre: "Reingreso_a_Mecanizado"
+    trigger: "REINGRESAR_LOTE"
+    duracion_nominal: 2 # minutos
+    descripcion: "Pieza de retrabajo reingresa a bandeja de entrada"
+
+# ------------------------------------------------------------------------------
+# 3. ARCOS (F): Flujo Causal y Pre/Post Condiciones
+# ------------------------------------------------------------------------------
+arcos:
+  # Disparo de t_iniciar_torno
+  - de: "p_in"
+    a: "t_iniciar_torno"
+    peso: 1
+  - de: "p_torno"
+    a: "t_iniciar_torno"
+    peso: 1
+  - de: "t_iniciar_torno"
+    a: "p_mecanizado"
+    peso: 1
+
+  # Disparo de t_fin_torno (libera el torno a p_torno)
+  - de: "p_mecanizado"
+    a: "t_fin_torno"
+    peso: 1
+  - de: "t_fin_torno"
+    a: "p_insp"
+    peso: 1
+  - de: "t_fin_torno"
+    a: "p_torno" # Recurso liberado
+    peso: 1
+
+  # Bifurcación en Inspección: Aprobado (t_aprobar)
+  - de: "p_insp"
+    a: "t_aprobar"
+    peso: 1
+  - de: "t_aprobar"
+    a: "p_fin" # Sumidero
+    peso: 1
+
+  # Bifurcación en Inspección: Rechazado (t_rechazar)
+  - de: "p_insp"
+    a: "t_rechazar"
+    peso: 1
+  - de: "t_rechazar"
+    a: "p_retrabajo"
+    peso: 1
+
+  # Retrabajo regresa a entrada
+  - de: "p_retrabajo"
+    a: "t_reingreso_retrabajo"
+    peso: 1
+  - de: "t_reingreso_retrabajo"
+    a: "p_in"
+    peso: 1

@@ -219,3 +219,32 @@ Para modelar un workflow real bajo la teoría DES, estructuramos el sistema en t
 1.  **Recursos:** Agentes autónomos que ejecutan las tareas (personas, máquinas, bases de datos). Cada recurso tiene su propia instancia de motor de estados local.
 2.  **Procesos:** Secuencias lógicas de eventos locales y de sincronización que alteran las condiciones de los recursos.
 3.  **Productos:** El valor añadido completado con éxito, formalizado matemáticamente por la llegada de la traza global a un **estado marcado** del lenguaje supervisor (\(w \in L_m\)) tras recorrer la red de recursos.
+
+---
+
+## Metodología de 8 Pasos para la Ingeniería de Flujos de Trabajo (Ciclo Fénix)
+
+Toda la formación del curso converge en una metodología sistemática de 8 etapas que conecta la teoría formal con la práctica industrial:
+
+![Ciclo de Vida de Ingeniería de Procesos](./ciclo_vida_ingenieria.svg)
+
+1. **Entender el Problema:** Análisis riguroso del dominio operativo (planta o negocio), dependencias, recursos críticos y políticas de excepción.
+2. **Construir los Modelos (Redes de Petri):** Modelado formal del paralelismo, sincronización (AND-join), decisiones (OR-split) y recursos compartidos mediante un grafo bipartito \(PN = (P, T, F, W, M_0)\).
+3. **Codificar Basado en Formalismos:** Serialización computable en YAML/JSON integrando la **Red de Petri** (dinámica causal) con la **Ontología** (taxonomía de recursos, productos y atributos).
+4. **Validar la Codificación (Motor PDA - *Clase 10*):** Verificación sintáctica formal con un Autómata con Pila (LIFO) que comprueba la gramática libre de contexto, indentación y balance de sub-procesos jerárquicos.
+5. **Validar la Completitud de la Especificación (Ontología):** Verificación semántica estática: comprobar que no existan recursos huérfanos, transiciones sin actor asignado o parámetros obligatorios faltantes.
+6. **Verificar la Especificación Dinámica (*Clase 12-A*):**
+   * Construcción del Espacio de Estados / Árbol de Cobertura con \(\omega\) (algoritmo de Karp-Miller).
+   * Análisis algebraico de \(P\)-Invariantes (conservación estricta de recursos: \(y^T \cdot C = 0\)) y \(T\)-Invariantes (ciclos reproducibles: \(C \cdot x = 0\)).
+   * Sifones y Trampas (prevención de bloqueos).
+   * **Corrección de Workflows (*Soundness*):** Comprobar opción de completar, finalización adecuada (cero fichas residuales) y ausencia de tareas muertas mediante el **Teorema del Cierre de van der Aalst** (\(\overline{PN}\) es viva y acotada).
+   * **¡Compuerta de Calidad!** Si la verificación falla, se rechaza el modelo y se regresa obligatoriamente a los pasos 1 o 2.
+7. **Desplegar (*Deploy*):** Inyección del modelo formal verificado al motor de ejecución (Fénix) como contrato ejecutable con garantía matemática de cero bloqueos.
+8. **Usar el Sistema (*Run-Time* - *Clase 12-B*):**
+   * **Planificar:** Simulación de tiempos métricos (\(T\)-timed / \(P\)-timed) para calcular el *Lead Time* teórico y predecir cuellos de botella y acumulación de inventario en proceso (WIP) sobre la ruta crítica.
+   * **Supervisar:** Gemelo Digital en tiempo real gobernado por el vector de marcado \(M_k\). Los sensores y operarios emiten *triggers* (\(\Sigma\)) que el motor desambigua determinísticamente por marcado actual. Temporizadores centinela (*watchdogs*) alertan de desvíos en el momento exacto en que ocurren.
+   * **Diagnosticar Demoras:** Descomposición causal post-mortem del tiempo total de ciclo:
+     * *Fricción por Recursos:* \(M(p_{\text{recurso}}) = 0\) mientras la pieza espera en cola.
+     * *Calidad de Insumos:* Insumo defectuoso que disparó ramas de rechazo y lazos de retrabajo.
+     * *Variabilidad Operacional:* Tarea nominal que excedió su tiempo estándar \(\tau\).
+

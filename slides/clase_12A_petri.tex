@@ -1,0 +1,486 @@
+\documentclass[10pt, aspectratio=169]{beamer}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[pscoord]{eso-pic}
+\usepackage{hyperref}
+\usepackage{eqnarray,amsmath}
+\usepackage[absolute,overlay]{textpos}
+\hypersetup{colorlinks=true,urlcolor=blue}
+
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows.meta, petri}
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\usepackage[style=apa]{biblatex}
+\bibliography{biblio.bib}
+
+\title{}
+\author{}
+\date{}
+
+\newtheorem{teorema}{Teorema.}
+\setbeamersize{text margin left=10pt,text margin right=10pt}
+\beamertemplatenavigationsymbolsempty
+
+\hypersetup{
+	colorlinks=true,
+	pdfborderstyle={/S/U/W 1}
+}
+
+\setbeamertemplate{background}{\includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{portada.pdf}}
+
+\newcommand{\azulULA}{\color[rgb]{0.30078125,0.30078125,0.999999}}
+\definecolor{azulULA}{RGB}{77, 77, 255}
+
+\setbeamercolor{title}{fg=azulULA}
+\setbeamercolor{frametitle}{fg=azulULA}
+\setbeamercolor{block title}{bg=azulULA,fg=white}
+\setbeamercolor{block body}{bg=azulULA!10!bg}
+
+\renewcommand{\qedsymbol}{\textcolor{black}{\openbox}}
+
+\newcommand{\placetextbox}[3]{
+	\setbox0=\hbox{#3}
+	\AddToShipoutPictureFG*{
+		\put(\LenToUnit{#1\paperwidth},\LenToUnit{#2\paperheight}){\vtop{{\null}\makebox[0pt][c]{#3}}}
+	}
+}
+\newcommand{\placetextboxleft}[3]{
+	\setbox0=\hbox{#3}
+	\AddToShipoutPictureFG*{
+		\put(\LenToUnit{#1\paperwidth},\LenToUnit{#2\paperheight}){\vtop{{\null}\makebox[0pt][l]{#3}}}
+	}
+}
+
+\begin{document}
+	% Diapositiva de portada
+	\begin{frame}
+		\placetextbox{0.47}{0.40}{\large\azulULA\textbf{\begin{tabular}{c} Teoría de la Computación y Lenguajes Formales: \\
+					Sesión 12-A. Verificación Formal de Workflows: El Análisis Previo \end{tabular}}}
+	\end{frame}
+	
+	% Cambio de formato para el cuerpo
+	\setbeamertemplate{background}{
+		\includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{fondo1280x720.pdf}}
+	
+	\begin{frame}{Alcance de la sesión 12-A}
+		\tableofcontents
+	\end{frame}
+
+% =======================================================
+\section{La Necesidad de la Verificación Previa}
+% =======================================================
+
+\begin{frame}{}
+	\centering
+	\Huge{La Necesidad de la Verificación Previa: \\ ¿Por qué no probar en producción?}
+\end{frame}
+
+\begin{frame}{La Falacia de las Pruebas en Sistemas Concurrentes}
+	\begin{block}{El problema del No-Determinismo y la Concurrencia}
+		En sistemas secuenciales clásicos, probar un conjunto representativo de casos de prueba puede ser suficiente. En \textbf{sistemas concurrentes (fábricas, flujos de trabajo administrativos)}:
+		\begin{itemize}
+			\item Existen millones de posibles intercalaciones de eventos (\emph{interleavings}).
+			\item Los errores de concurrencia (\emph{deadlocks}, condiciones de carrera) son \textbf{intermitentes} y casi imposibles de reproducir mediante pruebas empíricas.
+			\item \alert{Probar en producción es inadmisible:} parar una celda robótica, duplicar un pago bancario o dejar pedidos atrapados tiene un costo inmenso.
+		\end{itemize}
+	\end{block}
+
+	\begin{alertblock}{La Promesa de las Redes de Petri}
+		Una especificación formal en Redes de Petri permite \textbf{demostrar matemáticamente} que el sistema jamás se bloqueará, que no desbordará recursos y que todo caso culminará correctamente, \textbf{antes de conectar un sensor o compilar una sola línea de código}.
+	\end{alertblock}
+\end{frame}
+
+\begin{frame}{El Ciclo de Vida Completo de la Ingeniería de Procesos}
+	\begin{block}{Metodología de 8 Pasos: De los Requisitos a la Operación}
+		Cada tema de la materia representa una compuerta estricta de validación formal:
+	\end{block}
+
+	\begin{center}
+		\begin{tikzpicture}[x=3.4cm, y=-1.8cm, >=Stealth, thick]
+			% Fila 1: Especificación y Sintaxis
+			\node[draw=azulULA, rectangle, rounded corners, fill=azulULA!10, text width=2.6cm, align=center] (p1) at (0, 0)
+				{\textbf{1. Entender}\\ \scriptsize Requisitos del dominio\\ y restricciones};
+				
+			\node[draw=azulULA, rectangle, rounded corners, fill=azulULA!10, text width=2.6cm, align=center] (p2) at (1, 0)
+				{\textbf{2. Modelar RdP}\\ \scriptsize Lugares, transiciones\\ y recursos};
+				
+			\node[draw=azulULA, rectangle, rounded corners, fill=azulULA!10, text width=2.6cm, align=center] (p3) at (2, 0)
+				{\textbf{3. Codificar}\\ \scriptsize Formalismo\\ RdP + Ontología};
+				
+			\node[draw=orange!80!black, rectangle, rounded corners, fill=orange!10, text width=2.6cm, align=center] (p4) at (3, 0)
+				{\textbf{4. Validar (PDA)}\\ \scriptsize Sintaxis / Gramática\\ (\textbf{Clase 10})};
+
+			% Fila 2: Semántica, Verificación y Run-Time
+			\node[draw=orange!80!black, rectangle, rounded corners, fill=orange!10, text width=2.6cm, align=center] (p5) at (3, 1)
+				{\textbf{5. Completitud}\\ \scriptsize Semántica Ontología\\ y recursos tipados};
+				
+			\node[draw=red!80, rectangle, rounded corners, fill=red!15, text width=2.6cm, align=center] (p6) at (2, 1)
+				{\textbf{6. Verificar}\\ \scriptsize Árbol de alcance,\\ \emph{Soundness} (\textbf{12-A})};
+				
+			\node[draw=green!60!black, rectangle, rounded corners, fill=green!15, text width=2.6cm, align=center] (p7) at (1, 1)
+				{\textbf{7. Desplegar}\\ \scriptsize Inyección al Motor\\ Fénix};
+				
+			\node[draw=azulULA, rectangle, rounded corners, fill=azulULA!25, text width=2.6cm, align=center] (p8) at (0, 1)
+				{\textbf{8. Usar Sistema}\\ \scriptsize Planificar, Supervisar,\\ Diagnosticar (\textbf{12-B})};
+
+			% Flujo nominal
+			\draw[->, thick] (p1) -- (p2);
+			\draw[->, thick] (p2) -- (p3);
+			\draw[->, thick] (p3) -- (p4);
+			\draw[->, thick] (p4) -- (p5);
+			\draw[->, thick] (p5) -- (p6);
+			\draw[->, thick] (p6) -- node[above]{\tiny \textbf{Sound}} (p7);
+			\draw[->, thick] (p7) -- (p8);
+
+			% Bucle de retroalimentación ante falla de verificación
+			\draw[->, dashed, red!80, thick] (p6.north) to[out=135, in=-45] 
+				node[above, sloped]{\tiny \alert{\textbf{Si falla: Regresar a 1 o 2}}} (p2.south);
+		\end{tikzpicture}
+	\end{center}
+\end{frame}
+
+% =======================================================
+\section{Propiedades Formales de Comportamiento}
+% =======================================================
+
+\begin{frame}{}
+	\centering
+	\Huge{Propiedades Formales de Comportamiento: \\ ¿Qué le exigimos a un modelo correcto?}
+\end{frame}
+
+\begin{frame}{Alcanzabilidad y Estados Prohibidos}
+	\begin{block}{Definición Formal de Alcanzabilidad (\emph{Reachability})}
+		Un marcado $M$ es alcanzable desde el marcado inicial $M_0$ ($M \in R(M_0)$) si existe una secuencia finita de disparos $\sigma = t_1 t_2 \dots t_k$ tal que:
+		\[ M_0 \xrightarrow{\;\sigma\;} M \]
+		El conjunto $R(M_0)$ es el \textbf{Espacio de Estados} del sistema.
+	\end{block}
+
+	\begin{columns}
+		\column{.55\textwidth}
+		\begin{alertblock}{Verificación de Seguridad / Exclusión}
+			Si definimos un conjunto de estados prohibidos o catastróficos $S_{\text{inseguro}}$ (ej: dos trenes en el mismo tramo de vía, o la liberación de producto sin control de calidad):
+			\[ R(M_0) \cap S_{\text{inseguro}} = \emptyset \]
+			Garantiza matemáticamente la imposibilidad física o lógica de acceder al error.
+		\end{alertblock}
+
+		\column{.40\textwidth}
+		\begin{exampleblock}{Propiedad Dinámica}
+			La alcanzabilidad depende intrínsecamente del marcado inicial $M_0$, no solo de la topología de la red.
+		\end{exampleblock}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Acotamiento (\emph{Boundedness}) y Seguridad (\emph{Safeness})}
+	\begin{block}{Definición Formal de $k$-Acotamiento}
+		Un lugar $p \in P$ es \textbf{$k$-acotado} si el número de fichas en $p$ nunca excede un entero $k$:
+		\[ \forall M \in R(M_0): \quad M(p) \le k \]
+		La red completa es $k$-acotada si todos sus lugares lo son.
+	\end{block}
+
+	\begin{columns}
+		\column{.48\textwidth}
+		\begin{alertblock}{Seguridad (\emph{Safeness} / 1-Acotada)}
+			Si $k=1$, la red es **Safe (Segura)**:
+			\[ \forall p \in P, \forall M \in R(M_0): \quad M(p) \le 1 \]
+			\begin{itemize}
+				\item Cada lugar representa una condición booleana pura (activa o inactiva).
+				\item En workflows: garantiza que no hay tareas duplicadas accidentalmente en un mismo caso.
+			\end{itemize}
+		\end{alertblock}
+
+		\column{.48\textwidth}
+		\begin{exampleblock}{Significado en la Planta}
+			\begin{itemize}
+				\item Evita el desbordamiento de almacenes intermedios (\emph{buffers}).
+				\item Previene la saturación de memoria en colas de software y bases de datos.
+				\item Si una red no es acotada, el espacio de estados es **infinito**.
+			\end{itemize}
+		\end{exampleblock}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Vivacidad (\emph{Liveness}) y Grados de Vivacidad}
+	\begin{block}{La Jerarquía de Vivacidad (Niveles $L_0$ a $L_4$)}
+		Una transición $t \in T$ tiene un grado de vivacidad según su capacidad de dispararse en el futuro:
+		\begin{itemize}
+			\item \textbf{$L_0$ - Muerta (\emph{Dead}):} $t$ nunca se puede disparar en ninguna secuencia alcanzable desde $M_0$. Representa \alert{código muerto o diseño defectuoso}.
+			\item \textbf{$L_1$ - Cuasi-viva (\emph{Quasi-live}):} $t$ puede dispararse al menos una vez en alguna secuencia $\sigma$.
+			\item \textbf{$L_2$ - Repetible $k$ veces:} Para cualquier entero $k$, existe una secuencia donde $t$ se dispara al menos $k$ veces.
+			\item \textbf{$L_3$ - Infinitamente repetible:} Existe una secuencia de disparo infinita donde $t$ aparece infinitas veces.
+			\item \textbf{$L_4$ - Completamente Viva (\emph{Live}):} Desde \textbf{cualquier} marcado $M \in R(M_0)$, $t$ sigue siendo potencialmente habilitable en algún paso futuro.
+		\end{itemize}
+	\end{block}
+
+	\begin{alertblock}{Importancia en Automatización}
+		Una red libre de bloqueos permanentes exige que sus actividades críticas sean vivas en un grado acorde al ciclo de vida del sistema.
+	\end{alertblock}
+\end{frame}
+
+\begin{frame}{Bloqueos: \emph{Deadlock} vs. \emph{Livelock}}
+	\begin{columns}
+		\column{.48\textwidth}
+		\begin{alertblock}{1. Bloqueo Total (\emph{Deadlock})}
+			\begin{itemize}
+				\item Se alcanza un marcado $M_d \in R(M_0)$ tal que:
+				\[ \forall t \in T: \quad \neg (M_d [t\rangle) \]
+				\item Ninguna transición de la red puede dispararse. El sistema queda congelado permanentemente.
+				\item Típico en disputa circular de recursos: el robot A tiene la pieza y espera la máquina; la máquina tiene otra pieza y espera al robot A.
+			\end{itemize}
+		\end{alertblock}
+
+		\column{.48\textwidth}
+		\begin{block}{2. Bloqueo Dinámico (\emph{Livelock})}
+			\begin{itemize}
+				\item El sistema sigue disparando transiciones activamente.
+				\item Sin embargo, queda confinado en un conjunto cerrado de estados cíclicos y \textbf{nunca progresa hacia el objetivo final} (ej: sumidero).
+				\item En workflows: un bucle infinito de rechazos y reintentos sin condición de escape.
+			\end{itemize}
+		\end{block}
+	\end{columns}
+\end{frame}
+
+% =======================================================
+\section{Métodos de Verificación y Análisis}
+% =======================================================
+
+\begin{frame}{}
+	\centering
+	\Huge{Métodos de Verificación y Análisis: \\ Espacio de Estados, Álgebra y Topología}
+\end{frame}
+
+\begin{frame}{El Enfoque del Espacio de Estados: Árbol de Cobertura}
+	\begin{block}{Árbol y Grafo de Alcanzabilidad}
+		Se construye partiendo de $M_0$ disparando sucesivamente todas las transiciones habilitadas.
+		\begin{itemize}
+			\item Si la red es acotada, el grafo es **finito** y permite inspeccionar todas las propiedades directamente.
+			\item \alert{Problema de la Explosión Combinatoria:} Una red pequeña con 15 lugares concurrentes puede generar millones de estados.
+		\end{itemize}
+	\end{block}
+
+	\begin{columns}
+		\column{.55\textwidth}
+		\begin{exampleblock}{El Algoritmo de Karp-Miller y el Símbolo $\omega$}
+			Para redes no acotadas, si en una rama se alcanza un marcado $M' \ge M$ ($M' \neq M$):
+			\begin{itemize}
+				\item Los lugares donde $M'(p) > M(p)$ crecen indefinidamente.
+				\item Se reemplaza su valor por el símbolo $\omega$ (infinito).
+				\item Produce un **Árbol de Cobertura Finito** que detecta formalmente si la red no está acotada.
+			\end{itemize}
+		\end{exampleblock}
+
+		\column{.40\textwidth}
+		\begin{center}
+			\begin{tikzpicture}[node distance=1.1cm, >=Stealth, thick]
+				\node[draw, rectangle, rounded corners] (n0) {\scriptsize $[1, 0]$};
+				\node[draw, rectangle, rounded corners, below of=n0] (n1) {\scriptsize $[1, \omega]$};
+				\draw[->] (n0) -- node[right]{\tiny $t_1$} (n1);
+				\draw[->] (n1) edge [loop right] node[right]{\tiny $t_1$} (n1);
+			\end{tikzpicture}
+		\end{center}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Análisis Algebraico: Invariantes de Lugar ($P$-Invariantes)}
+	\begin{block}{Definición de $P$-Invariante}
+		Un vector no nulo $y \ge 0$ de dimensión $|P|$ es un \textbf{$P$-invariante} si:
+		\[ y^T \cdot C = 0 \]
+		donde $C$ es la matriz de incidencia de la red.
+	\end{block}
+
+	\begin{alertblock}{Propiedad Fundamental de Conservación}
+		Multiplicando la ecuación de estado por $y^T$:
+		\[ y^T \cdot M = y^T \cdot M_0 + y^T \cdot C \cdot u = y^T \cdot M_0 = \text{Constante} \]
+		\textbf{La suma ponderada de fichas en esos lugares permanece idéntica en todo momento.}
+	\end{alertblock}
+
+	\begin{exampleblock}{Interpretación Física en Plantas y Flujos}
+		\begin{itemize}
+			\item \textbf{Conservación de Recursos:} $M(\texttt{Robot\_Libre}) + M(\texttt{Robot\_Ocupado}) = 1$.
+			\item \textbf{Acotamiento Estructural:} Si todo lugar pertenece a un $P$-invariante con pesos positivos, la red es \textbf{estructuralmente acotada} (independientemente de cuántos estados tenga).
+		\end{itemize}
+	\end{exampleblock}
+\end{frame}
+
+\begin{frame}{Análisis Algebraico: Invariantes de Transición ($T$-Invariantes)}
+	\begin{block}{Definición de $T$-Invariante}
+		Un vector no nulo $x \ge 0$ de dimensión $|T|$ es un \textbf{$T$-invariante} si:
+		\[ C \cdot x = 0 \]
+	\end{block}
+
+	\begin{columns}
+		\column{.50\textwidth}
+		\begin{block}{Propiedad de Retorno al Estado}
+			Si una secuencia realizable $\sigma$ tiene como vector de conteo de disparos a $x$:
+			\[ M \xrightarrow{\;\sigma\;} M \]
+			El sistema ejecuta la secuencia $\sigma$ y \textbf{regresa exactamente al mismo marcado inicial $M$}.
+		\end{block}
+
+		\column{.46\textwidth}
+		\begin{exampleblock}{Aplicación en Procesos}
+			\begin{itemize}
+				\item Modela **ciclos completos de manufactura** o procesamiento de órdenes.
+				\item Demuestra la **reversibilidad** y reproducibilidad de los ciclos operativos.
+				\item Permite auditar si el flujo tiene caminos cíclicos no deseados.
+			\end{itemize}
+		\end{exampleblock}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Estructuras Topológicas Críticas: Sifones y Trampas}
+	\begin{columns}
+		\column{.48\textwidth}
+		\begin{alertblock}{Sifón (\emph{Siphon})}
+			Un conjunto de lugares $S \subseteq P$ es un \textbf{sifón} si todas las transiciones que alimentan a $S$ son también de salida de $S$:
+			\[ {}^\bullet S \subseteq S^\bullet \]
+			\begin{itemize}
+				\item \textbf{Propiedad Crítica:} Si en algún momento $S$ pierde todas sus fichas ($M(S)=0$), \alert{nunca más podrá recibir fichas}.
+				\item Es la **génesis estructural del Deadlock**.
+			\end{itemize}
+		\end{alertblock}
+
+		\column{.48\textwidth}
+		\begin{exampleblock}{Trampa (\emph{Trap})}
+			Un conjunto de lugares $Q \subseteq P$ es una \textbf{trampa} si todas las transiciones de salida de $Q$ son también de entrada a $Q$:
+			\[ Q^\bullet \subseteq {}^\bullet Q \]
+			\begin{itemize}
+				\item \textbf{Propiedad Vital:} Si en algún momento $Q$ contiene al menos una ficha, \textbf{jamás quedará completamente vacío}.
+				\item Protege al sistema contra la inanición.
+			\end{itemize}
+		\end{exampleblock}
+	\end{columns}
+
+	\vspace{0.2cm}
+	\centering{\footnotesize \textbf{Teorema de Commoner (en redes Free-Choice):} La red es viva si y solo si todo sifón contiene una trampa marcada en $M_0$.}
+\end{frame}
+
+% =======================================================
+\section{La Corrección de Flujos de Trabajo: Soundness}
+% =======================================================
+
+\begin{frame}{}
+	\centering
+	\Huge{La Corrección de Flujos de Trabajo: \\ Soundness y el Teorema del Cierre}
+\end{frame}
+
+\begin{frame}{Los Tres Criterios de Corrección (\emph{Soundness} - van der Aalst)}
+	\begin{block}{Definición Formal de Soundness en una WF-Net}
+		Una WF-Net $PN = (P, T, F)$ con entrada $i$ y salida $o$ es **Correcta (\emph{Sound})** si y solo si cumple:
+		\begin{enumerate}
+			\item \textbf{Opción de Completar (\emph{Option to complete}):}\\
+			Para todo marcado alcanzable $M \in R([i])$, el marcado sumidero $[o]$ es alcanzable:
+			\[ \forall M \in R([i]): \quad [o] \in R(M) \]
+			\item \textbf{Finalización Adecuada (\emph{Proper completion}):}\\
+			Si un marcado $M \in R([i])$ pone una ficha en el sumidero $o$, no puede haber fichas en ningún otro lugar:
+			\[ \forall M \in R([i]): \quad (M \ge [o]) \implies (M = [o]) \]
+			\item \textbf{Ausencia de Tareas Muertas (\emph{No dead tasks}):}\\
+			Toda transición $t \in T$ puede dispararse en al menos una instancia de ejecución ($L_1$-viva):
+			\[ \forall t \in T, \exists M \in R([i]): \quad M[t\rangle \]
+		\end{enumerate}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Patologías Comunes: ¿Qué pasa cuando un WF no es \emph{Sound}?}
+	\begin{columns}
+		\column{.48\textwidth}
+		\begin{alertblock}{1. Falta de Sincronización (Fichas Basura)}
+			\begin{itemize}
+				\item Se usa una bifurcación AND-split pero luego se recolecta con un OR-join en vez de AND-join.
+				\item Una rama llega a $o$ y la otra rama queda ejecutándose sola.
+				\item \textbf{Consecuencia:} Fichas residuales (\emph{garbage tokens}) contaminando la memoria y tareas disparadas dos veces por error.
+			\end{itemize}
+		\end{alertblock}
+
+		\column{.48\textwidth}
+		\begin{alertblock}{2. Sincronización Imposible (Deadlock)}
+			\begin{itemize}
+				\item Se usa una bifurcación excluyente (OR-split) pero luego se intenta consolidar con un AND-join.
+				\item El AND-join espera fichas de ambas ramas, pero solo una se ejecutó.
+				\item \textbf{Consecuencia:} Bloqueo absoluto. El caso de negocio queda colgado de por vida esperando una tarea que jamás ocurrirá.
+			\end{itemize}
+		\end{alertblock}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{El Teorema Fundamental del Cierre de van der Aalst}
+	\begin{block}{La Red Cerrada $\overline{PN}$}
+		Dada una WF-Net, conectamos el sumidero $o$ de regreso a la fuente $i$ mediante una transición virtual $t^*$:
+	\end{block}
+
+	\begin{center}
+		\begin{tikzpicture}[node distance=2.2cm, >=Stealth, thick]
+			\node[place, tokens=1] (i) [label={above:\scriptsize $i$ (Inicio)}] {};
+			\node[draw, dashed, rectangle, minimum width=3.5cm, minimum height=1.2cm, right of=i, xshift=0.5cm] (wf) {Cuerpo del Workflow (WF-Net)};
+			\node[place] (o) [right of=wf, xshift=0.5cm, label={above:\scriptsize $o$ (Fin)}] {};
+			
+			\draw[->] (i) -- (wf);
+			\draw[->] (wf) -- (o);
+			
+			\node[transition] (tstar) [below of=wf, yshift=0.2cm, label={below:\scriptsize Transición de Cierre $t^*$}] {};
+			\path (o) edge [->, bend left=45] (tstar);
+			\path (tstar) edge [->, bend left=45] (i);
+		\end{tikzpicture}
+	\end{center}
+
+	\begin{alertblock}{Teorema del Cierre (van der Aalst, 1997)}
+		\[ \text{Una WF-Net es \textbf{Correcta (Sound)}} \iff \text{La red cerrada } \overline{PN} \text{ es \textbf{VIVA y ACOTADA}} \]
+	\end{alertblock}
+	\centering{\footnotesize \textbf{Trascendencia:} ¡No necesitamos una teoría nueva para flujos de trabajo! Todo el análisis algebraico y topológico de Redes de Petri verifica directamente cualquier workflow empresarial.}
+\end{frame}
+
+\begin{frame}{Validación en Tiempo de Carga en el Motor Fénix}
+	\begin{block}{El Filtro de Despliegue (*Deploy Time*)}
+		En la arquitectura de Fénix, la especificación en Red de Petri no es solo documentación gráfica, es un **contrato ejecutable**:
+		\begin{enumerate}
+			\item El diseñador modela el flujo de trabajo (en planta o administrativo).
+			\item El compilador de Fénix cierra la red con $t^*$ y analiza:
+				\begin{itemize}
+					\item Invariantes de lugar $\implies$ acotamiento de recursos.
+					\item Ausencia de sifones no cubiertos por trampas $\implies$ sin bloqueos.
+					\item Vivacidad y acotamiento de $\overline{PN} \implies$ **Soundness garantizado**.
+				\end{itemize}
+			\item \textbf{Si el análisis pasa:} El flujo se despliega al motor para planificar y supervisar.
+			\item \textbf{Si el análisis falla:} El motor rechaza el despliegue e indica exactamente cuál ruta conduce a bloqueo o a fichas huérfanas.
+		\end{enumerate}
+	\end{block}
+\end{frame}
+
+% =======================================================
+\section{Conclusión}
+% =======================================================
+
+\begin{frame}{Conclusión de la Sesión 12-A}
+	\begin{block}{Lo que aprendimos en esta sesión}
+		\small
+		\begin{itemize}
+			\item \textbf{La Falacia de las Pruebas Empíricas:} La concurrencia exige demostración matemática formal previa; probar en producción es prohibitivo.
+			\item \textbf{Propiedades Formales:} Alcanzabilidad ($R(M_0)$), Acotamiento y Seguridad ($M(p)\le 1$), y Vivacidad ($L_0$ a $L_4$).
+			\item \textbf{Métodos de Análisis:} Árbol de cobertura con $\omega$ (Karp-Miller), $P$-invariantes (conservación física), $T$-invariantes (ciclos) y Sifones/Trampas (anatomía del bloqueo).
+			\item \textbf{Soundness y Teorema del Cierre:} Opción de completar, finalización adecuada y sin tareas muertas $\iff \overline{PN}$ es viva y acotada.
+			\item \textbf{Fénix Deploy-Time:} Garantía matemática de cero estados colgados antes de ejecutar.
+		\end{itemize}
+	\end{block}
+
+	\begin{exampleblock}{Próxima Sesión (12-B): El Motor en Acción}
+		\small
+		**Planificación, Supervisión en Tiempo Real y Diagnóstico de Rendimiento**: ¿Por qué un estado demoró más de lo esperado? (Recursos vs. Calidad de Insumos vs. Variabilidad).
+	\end{exampleblock}
+\end{frame}
+
+% Diapositiva final
+\setbeamertemplate{headline}{}
+\setbeamertemplate{background}
+{\includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{salida.pdf}}
+
+\begin{frame}
+	\placetextbox{0.6}{0.87}{\Huge\textbf{¡Muchas gracias!}}
+\end{frame}
+
+\setbeamertemplate{headline}{}
+\setbeamertemplate{background}{}
+
+\printbibliography
+\end{document}

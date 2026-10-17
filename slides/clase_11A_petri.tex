@@ -1,0 +1,377 @@
+\documentclass[10pt, aspectratio=169]{beamer}
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[pscoord]{eso-pic}
+\usepackage{hyperref}
+\usepackage{eqnarray,amsmath}
+\usepackage[absolute,overlay]{textpos}
+\hypersetup{colorlinks=true,urlcolor=blue}
+
+\usepackage{tikz}
+\usetikzlibrary{automata, positioning, arrows.meta, petri}
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\usepackage[style=apa]{biblatex}
+\bibliography{biblio.bib}
+
+\title{}
+\author{}
+\date{}
+
+\newtheorem{teorema}{Teorema.}
+\setbeamersize{text margin left=10pt,text margin right=10pt}
+\beamertemplatenavigationsymbolsempty
+
+\hypersetup{
+	colorlinks=true,
+	pdfborderstyle={/S/U/W 1}
+}
+
+\setbeamertemplate{background}{\includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{portada.pdf}}
+
+\newcommand{\azulULA}{\color[rgb]{0.30078125,0.30078125,0.999999}}
+\definecolor{azulULA}{RGB}{77, 77, 255}
+
+\setbeamercolor{title}{fg=azulULA}
+\setbeamercolor{frametitle}{fg=azulULA}
+\setbeamercolor{block title}{bg=azulULA,fg=white}
+\setbeamercolor{block body}{bg=azulULA!10!bg}
+
+\renewcommand{\qedsymbol}{\textcolor{black}{\openbox}}
+
+\newcommand{\placetextbox}[3]{
+	\setbox0=\hbox{#3}
+	\AddToShipoutPictureFG*{
+		\put(\LenToUnit{#1\paperwidth},\LenToUnit{#2\paperheight}){\vtop{{\null}\makebox[0pt][c]{#3}}}
+	}
+}
+\newcommand{\placetextboxleft}[3]{
+	\setbox0=\hbox{#3}
+	\AddToShipoutPictureFG*{
+		\put(\LenToUnit{#1\paperwidth},\LenToUnit{#2\paperheight}){\vtop{{\null}\makebox[0pt][l]{#3}}}
+	}
+}
+
+\begin{document}
+	% Diapositiva de la portada.
+	\begin{frame}
+		\placetextbox{0.47}{0.40}{\large\azulULA\textbf{\begin{tabular}{c} Teoría de la Computación y Lenguajes Formales: \\
+					Sesión 11-A. Redes de Petri y Lenguajes Concurrentes \end{tabular}}}
+	\end{frame}
+	
+	% Cambio de formato para las diapositivas centrales (cuerpo/contenido).
+	\setbeamertemplate{background}{
+		\includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{fondo1280x720.pdf}}
+	
+	\begin{frame}{Alcance de la sesión 11-A}
+		\tableofcontents
+	\end{frame}
+
+% =======================================================
+\section{De las Cadenas a las Trazas Concurrentes}
+% =======================================================
+
+\begin{frame}{}
+	\centering
+	\Huge{De la Cinta Secuencial a las Trazas Concurrentes: \\ ¿Dónde encajan las Redes de Petri?}
+\end{frame}
+
+\begin{frame}{El Límite de la Cinta Lineal Clásica}
+	\begin{block}{Hasta ahora: Computación Estrictamente Secuencial}
+		\begin{itemize}
+			\item En los Autómatas Finitos (DFA) y de Pila (PDA), leíamos una cinta con un único cabezal de lectura: un símbolo a la vez ($a \to b \to c$).
+			\item Para representar dos procesos simultáneos, nos veíamos obligados a multiplicar todos sus estados (explosión combinatoria del producto cartesiano $Q_1 \times Q_2$).
+		\end{itemize}
+	\end{block}
+
+	\begin{alertblock}{La Realidad Concurrente}
+		En una planta o en un sistema distribuido, las máquinas y personas operan en \textbf{paralelo}:
+		\begin{itemize}
+			\item Múltiples actividades ocurren al mismo tiempo de forma independiente.
+			\item Se sincronizan únicamente cuando comparten piezas, datos o recursos escasos.
+		\end{itemize}
+		Necesitamos un modelo formal nativo para el paralelismo: las \textbf{Redes de Petri}.
+	\end{alertblock}
+\end{frame}
+
+\begin{frame}{El Lenguaje de una Red de Petri: $L(PN)$}
+	\begin{block}{Seguimos en la Teoría de Lenguajes Formales}
+		Podemos ver a una Red de Petri como una máquina generadora o reconocedora de lenguajes:
+		\begin{itemize}
+			\item Cada transición $t \in T$ es un \textbf{símbolo del alfabeto} ($\Sigma = T$).
+			\item Una secuencia válida de disparos $t_1 \to t_2 \to \dots \to t_k$ es una \textbf{cadena o palabra} ($\sigma \in T^*$).
+			\item En ingeniería, esa cadena es exactamente la \textbf{traza de auditoría (el log de eventos)} del proceso.
+		\end{itemize}
+	\end{block}
+
+	\begin{alertblock}{Definición Formal del Lenguaje de la Red}
+		El lenguaje generado por una Red de Petri es el conjunto de todas las secuencias de disparo posibles que llevan desde el marcado inicial $M_0$ a un conjunto de marcados finales $M_f$:
+		\[ L(PN) = \{ \sigma \in T^* \mid M_0 \xrightarrow{\sigma} M_f \} \]
+	\end{alertblock}
+\end{frame}
+
+% =======================================================
+\section{Formalismo y Grafo Bipartito}
+% =======================================================
+
+\begin{frame}{}
+	\centering
+	\Huge{Formalismo Matemático: \\ La 5-Tupla y el Grafo Bipartito}
+\end{frame}
+
+\begin{frame}{Definición Formal: La 5-Tupla}
+	\begin{block}{La 5-Tupla de la Red de Petri}
+		Una Red de Petri clásica se define formalmente como:
+		\[ PN = (P, T, F, W, M_0) \]
+		\begin{itemize}
+			\item $P = \{p_1, p_2, \dots, p_m\}$: Conjunto finito de \textbf{lugares} (condiciones pasivas / buffers).
+			\item $T = \{t_1, t_2, \dots, t_n\}$: Conjunto finito de \textbf{transiciones} (eventos activos / tareas).
+			\item Disjuntos: $P \cap T = \emptyset$ (ningún nodo puede ser lugar y transición a la vez).
+			\item $F \subseteq (P \times T) \cup (T \times P)$: Conjunto de \textbf{arcos dirigidos} (flujo de control).
+			\item $W: F \to \mathbb{Z}^+$: Función de \textbf{peso de los arcos} (por defecto $1$).
+			\item $M_0: P \to \mathbb{N}$: \textbf{Marcado inicial} (vector que indica cuántas fichas hay en cada lugar).
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}{Representación Gráfica: Un Grafo Bipartito}
+	\begin{block}{Elementos Gráficos Fundamentales}
+		\begin{columns}
+			\column{.48\textwidth}
+			\begin{itemize}
+				\item \textbf{Lugares ($\bigcirc$):} Círculos que representan estados pasivos o recursos.
+				\item \textbf{Transiciones ($\blacksquare$ o $|$):} Barras que representan eventos o tareas.
+				\item \textbf{Arcos dirigidos ($\to$):} Conectan $P \to T$ o $T \to P$. \alert{¡Nunca conectan elementos del mismo tipo!}
+				\item \textbf{Fichas / Tokens ($\bullet$):} Puntos dentro de los lugares que representan entidades o condiciones activas.
+			\end{itemize}
+			\column{.48\textwidth}
+			\begin{center}
+				\begin{tikzpicture}[node distance=2.2cm, >=Stealth, thick]
+					\node[place, tokens=1] (p1) [label=above:\scriptsize $p_1$ (Libre)] {};
+					\node[transition] (t1) [right of=p1, label=above:\scriptsize $t_1$ (Ocupar)] {}
+						edge [pre] (p1);
+					\node[place] (p2) [right of=t1, label=above:\scriptsize $p_2$ (En uso)] {}
+						edge [pre] (t1);
+					\node[transition] (t2) [below of=p2, label=below:\scriptsize $t_2$ (Liberar)] {}
+						edge [pre] (p2);
+					\path (t2) edge [post, bend left=45] (p1);
+				\end{tikzpicture}
+			\end{center}
+		\end{columns}
+	\end{block}
+\end{frame}
+
+% =======================================================
+\section{Dinámica de Disparo y Ecuación de Estado}
+% =======================================================
+
+\begin{frame}{}
+	\centering
+	\Huge{La Dinámica de Disparo: \\ Habilitación y Ecuación Fundamental}
+\end{frame}
+
+\begin{frame}{Reglas de Habilitación y Disparo}
+	\begin{block}{1. Regla de Habilitación}
+		Una transición $t \in T$ está \textbf{habilitada} bajo el marcado $M$ si cada uno de sus lugares de entrada posee al menos tantas fichas como el peso del arco que los une:
+		\[ \forall p \in {}^\bullet t, \quad M(p) \ge W(p, t) \]
+	\end{block}
+
+	\begin{block}{2. Regla de Disparo}
+		El disparo de una transición habilitada $t$ produce un nuevo marcado $M'$:
+		\begin{itemize}
+			\item \textbf{Consume} $W(p, t)$ fichas de cada lugar de entrada $p \in {}^\bullet t$.
+			\item \textbf{Deposita} $W(t, p')$ fichas en cada lugar de salida $p' \in t^\bullet$.
+			\[ M'(p) = M(p) - W(p, t) + W(t, p) \]
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}{La Ecuación Fundamental de Estado}
+	\begin{block}{Formulación Matricial del DES}
+		El marcado del sistema en el paso $k+1$ se calcula algebraicamente como:
+		\[ M_{k+1} = M_k + C \cdot u_k \]
+		\begin{itemize}
+			\item $M_k \in \mathbb{N}^{|P|}$: Vector de marcado en el instante $k$ (columna de fichas por lugar).
+			\item $u_k \in \{0, 1\}^{|T|}$: Vector de disparo (un $1$ en la transición que se dispara).
+			\item $C \in \mathbb{Z}^{|P| \times |T|}$: \textbf{Matriz de Incidencia}:
+			\[ C(p, t) = W(t, p) - W(p, t) = \text{Salida} - \text{Entrada} \]
+		\end{itemize}
+	\end{block}
+
+	\begin{exampleblock}{Ventaja Fundamental}
+		Permite calcular propiedades de comportamiento del proceso usando álgebra lineal simple sin construir todos los estados posibles del sistema.
+	\end{exampleblock}
+\end{frame}
+
+% =======================================================
+\section{Concurrencia, Interleaving y Chomsky}
+% =======================================================
+
+\begin{frame}{}
+	\centering
+	\Huge{Concurrencia vs. Secuencia: \\ El Entrelazado y la Jerarquía de Chomsky}
+\end{frame}
+
+\begin{frame}{El Fenómeno del Entrelazado (\emph{Interleaving})}
+	\begin{block}{¿Qué ocurre si dos tareas son concurrentes?}
+		Si dos transiciones $t_A$ y $t_B$ están habilitadas simultáneamente sin compartir fichas ($t_A \parallel t_B$):
+		\begin{itemize}
+			\item Ambas pueden dispararse independientemente en cualquier orden temporal.
+			\item El lenguaje generado incluye \textbf{todas las permutaciones válidas de su ejecución}:
+			\[ L = \{ t_A t_B, \; t_B t_A \} \]
+		\end{itemize}
+	\end{block}
+
+	\begin{alertblock}{La Gran Ventaja sobre los Autómatas}
+		En un DFA, modelar $n$ tareas paralelas requiere $2^n$ estados y $n \cdot 2^{n-1}$ transiciones entrelazadas. En una Red de Petri, se modelan con solo $n$ transiciones simples.
+	\end{alertblock}
+\end{frame}
+
+\begin{frame}{Superando al Autómata de Pila: El Lenguaje $a^n b^n c^n$}
+	\begin{block}{El Límite del PDA (Lenguajes Tipo 2)}
+		En la Sesión 8 vimos que un Autómata de Pila solo puede balancear dos símbolos ($a^n b^n$), pero \textbf{falla con tres} ($L = \{a^n b^n c^n\}$) porque al vaciar la pila con $b$, pierde la memoria de $n$ para compararla con $c$.
+	\end{block}
+
+	\begin{exampleblock}{Solución Trivial con una Red de Petri}
+		\begin{columns}
+			\column{.45\textwidth}
+			\begin{itemize}
+				\item $t_a$ genera fichas en $p_b$ y $p_c$ a la vez.
+				\item $t_b$ consume fichas de $p_b$.
+				\item $t_c$ consume fichas de $p_c$.
+			\end{itemize}
+			\column{.50\textwidth}
+			\begin{center}
+				\begin{tikzpicture}[node distance=1.6cm, >=Stealth, thick]
+					\node[transition] (ta) [label=above:\scriptsize $t_a$] {};
+					\node[place] (pb) [above right of=ta, label=above:\scriptsize $p_b$] {} edge [pre] (ta);
+					\node[place] (pc) [below right of=ta, label=below:\scriptsize $p_c$] {} edge [pre] (ta);
+					\node[transition] (tb) [right of=pb, label=above:\scriptsize $t_b$] {} edge [pre] (pb);
+					\node[transition] (tc) [right of=pc, label=below:\scriptsize $t_c$] {} edge [pre] (pc);
+				\end{tikzpicture}
+			\end{center}
+		\end{columns}
+		\centering{\azulULA \textbf{Las Redes de Petri generan lenguajes Sensibles al Contexto (Tipo 1) de forma natural.}}
+	\end{exampleblock}
+\end{frame}
+
+% =======================================================
+\section{Patrones Fundamentales de Concurrencia}
+% =======================================================
+
+\begin{frame}{}
+	\centering
+	\Huge{Los Patrones Fundamentales de Concurrencia \\ en Flujos de Trabajo}
+\end{frame}
+
+\begin{frame}{Patrones 1, 2 y 3: Secuencia, Paralelismo y Sincronización}
+	\begin{columns}
+		\column{.32\textwidth}
+		\begin{block}{\scriptsize 1. Secuencia}
+			\centering
+			\begin{tikzpicture}[node distance=1.1cm, >=Stealth, thick]
+				\node[place, tokens=1] (p1) {};
+				\node[transition] (t1) [below of=p1] {} edge [pre] (p1);
+				\node[place] (p2) [below of=t1] {} edge [pre] (t1);
+				\node[transition] (t2) [below of=p2] {} edge [pre] (p2);
+			\end{tikzpicture}
+			\vspace{1mm}
+			{\tiny $t_1$ debe ocurrir antes que $t_2$.}
+		\end{block}
+
+		\column{.33\textwidth}
+		\begin{block}{\scriptsize 2. AND-Split (Bifurcación)}
+			\centering
+			\begin{tikzpicture}[node distance=1.1cm, >=Stealth, thick]
+				\node[place, tokens=1] (p1) {};
+				\node[transition] (t1) [below of=p1] {} edge [pre] (p1);
+				\node[place] (p2) [below left of=t1] {} edge [pre] (t1);
+				\node[place] (p3) [below right of=t1] {} edge [pre] (t1);
+			\end{tikzpicture}
+			\vspace{1mm}
+			{\tiny Disparo inicia dos tareas en paralelo.}
+		\end{block}
+
+		\column{.33\textwidth}
+		\begin{block}{\scriptsize 3. AND-Join (Sincronización)}
+			\centering
+			\begin{tikzpicture}[node distance=1.1cm, >=Stealth, thick]
+				\node[place, tokens=1] (p1) {};
+				\node[place, tokens=1] (p2) [right of=p1] {};
+				\node[transition] (t1) [below of=p1, xshift=0.55cm] {} 
+					edge [pre] (p1) edge [pre] (p2);
+				\node[place] (p3) [below of=t1] {} edge [pre] (t1);
+			\end{tikzpicture}
+			\vspace{1mm}
+			{\tiny Requiere que ambas ramas terminen.}
+		\end{block}
+	\end{columns}
+\end{frame}
+
+\begin{frame}{Patrones 4 y 5: Elección y Exclusión Mutua}
+	\begin{columns}
+		\column{.48\textwidth}
+		\begin{block}{4. OR-Split (Conflicto / Elección)}
+			\centering
+			\begin{tikzpicture}[node distance=1.3cm, >=Stealth, thick]
+				\node[place, tokens=1] (p1) [label=above:\scriptsize Opción] {};
+				\node[transition] (t1) [below left of=p1, label=left:\tiny $t_1$ (Aprobar)] {} edge [pre] (p1);
+				\node[transition] (t2) [below right of=p1, label=right:\tiny $t_2$ (Rechazar)] {} edge [pre] (p1);
+			\end{tikzpicture}
+			
+			\vspace{2mm}
+			\small Una sola ficha compartida: si se dispara $t_1$, inhabilita a $t_2$. Modela decisiones mutuamente excluyentes.
+		\end{block}
+
+		\column{.48\textwidth}
+		\begin{block}{5. Exclusión Mutua (Recurso Compartido)}
+			\centering
+			\begin{tikzpicture}[node distance=1.3cm, >=Stealth, thick]
+				\node[place, tokens=1] (sem) [label=above:\scriptsize Semáforo / Recurso] {};
+				\node[transition] (t1) [below left of=sem, label=left:\tiny Tomar Máquina A] {} edge [pre] (sem);
+				\node[transition] (t2) [below right of=sem, label=right:\tiny Tomar Máquina B] {} edge [pre] (sem);
+			\end{tikzpicture}
+			
+			\vspace{2mm}
+			\small Garantiza que dos procesos concurrentes no usen el mismo recurso físico al mismo tiempo.
+		\end{block}
+	\end{columns}
+\end{frame}
+
+% =======================================================
+\section{Conclusión}
+% =======================================================
+
+\begin{frame}{Conclusión de la Sesión 11-A}
+	\begin{block}{Lo que aprendimos hoy}
+		\begin{itemize}
+			\item \textbf{Continuidad en Lenguajes Formales:} Las Redes de Petri son generadoras de lenguajes ($L(PN)$), donde las secuencias de disparo son trazas de auditoría del sistema.
+			\item \textbf{El Poder del Paralelismo:} Superan las limitaciones de la cinta secuencial del DFA/PDA mediante el entrelazado (\emph{interleaving}) y resuelven lenguajes Sensibles al Contexto ($a^n b^n c^n$).
+			\item \textbf{Estructura Bipartita y Ecuación de Estado:} Lugares, transiciones y la ecuación $M_{k+1} = M_k + C \cdot u_k$.
+			\item \textbf{Patrones de Concurrencia:} Dominamos el modelado gráfico de secuencias, bifurcaciones (AND-split), sincronizaciones (AND-join) y recursos compartidos.
+		\end{itemize}
+	\end{block}
+
+	\begin{exampleblock}{Próxima Sesión (11-B)}
+		Aplicaremos estos formalismos al **Modelado de Workflows**, exploraremos las **Redes de Petri Coloreadas (CPN)** y consolidaremos la **Tríptica Recurso-Proceso-Producto**.
+	\end{exampleblock}
+\end{frame}
+
+% Cambio de formato para la diapositiva final.
+\setbeamertemplate{headline}{}
+\setbeamertemplate{background}
+{\includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{salida.pdf}}
+
+% Diapositiva final.
+\begin{frame}
+	\placetextbox{0.6}{0.87}{\Huge\textbf{¡Muchas gracias!}}
+\end{frame}
+
+\setbeamertemplate{headline}{}
+\setbeamertemplate{background}{}
+
+\printbibliography
+\end{document}

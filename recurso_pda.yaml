@@ -1,0 +1,71 @@
+recurso: "Centro_Mecanizado_CNC"
+tipo: "Estacion_Con_Subprocesos"
+estado_inicial: "OCIOSO"
+simbolo_inicial_pila: "Z0"
+alfabeto_pila:
+  - "Z0"
+  - "CTX_DESBASTE"
+  - "CTX_ACABADO"
+
+estados_finales:
+  exito:
+    - "COMPLETADO"
+  falla:
+    - "BLOQUEO_CONTEXTO"
+
+eventos:
+  - id: "cargar_material"
+    controlable: true
+  - id: "iniciar_desbaste"
+    controlable: true
+  - id: "fin_desbaste"
+    controlable: true
+  - id: "iniciar_acabado"
+    controlable: true
+  - id: "fin_acabado"
+    controlable: true
+  - id: "despachar"
+    controlable: true
+
+transiciones_pda:
+  # 1. Cargar material: OCIOSO -> LISTO (Pila: Z0 -> Z0)
+  - de: "OCIOSO"
+    evento: "cargar_material"
+    tope_pila: "Z0"
+    a: "LISTO"
+    apilar: ["Z0"]
+
+  # 2. Iniciar sub-proceso Desbaste: PUSH CTX_DESBASTE sobre Z0
+  - de: "LISTO"
+    evento: "iniciar_desbaste"
+    tope_pila: "Z0"
+    a: "EN_DESBASTE"
+    apilar: ["CTX_DESBASTE", "Z0"]
+
+  # 3. Finalizar sub-proceso Desbaste: POP CTX_DESBASTE (queda Z0)
+  - de: "EN_DESBASTE"
+    evento: "fin_desbaste"
+    tope_pila: "CTX_DESBASTE"
+    a: "DESBASTE_COMPLETO"
+    apilar: []
+
+  # 4. Iniciar sub-proceso Acabado: PUSH CTX_ACABADO sobre Z0
+  - de: "DESBASTE_COMPLETO"
+    evento: "iniciar_acabado"
+    tope_pila: "Z0"
+    a: "EN_ACABADO"
+    apilar: ["CTX_ACABADO", "Z0"]
+
+  # 5. Finalizar sub-proceso Acabado: POP CTX_ACABADO (queda Z0)
+  - de: "EN_ACABADO"
+    evento: "fin_acabado"
+    tope_pila: "CTX_ACABADO"
+    a: "PIEZA_TERMINADA"
+    apilar: []
+
+  # 6. Despacho final: PIEZA_TERMINADA -> COMPLETADO (Solo si la pila está limpia en Z0)
+  - de: "PIEZA_TERMINADA"
+    evento: "despachar"
+    tope_pila: "Z0"
+    a: "COMPLETADO"
+    apilar: ["Z0"]

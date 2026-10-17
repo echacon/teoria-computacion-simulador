@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 430" width="100%" height="100%" style="background-color:#ffffff; font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#4d4dff" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#16a34a" />
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#ea580c" />
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#dc2626" />
+    </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+      <feOffset dx="1" dy="3" />
+      <feComponentTransfer><feFuncA type="linear" slope="0.15"/></feComponentTransfer>
+      <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="550" y="35" font-size="20" font-weight="bold" fill="#1e1b4b" text-anchor="middle">
+    Ciclo de Vida de Ingeniería de Procesos (Metodología Fénix / DES)
+  </text>
+  <text x="550" y="58" font-size="13" fill="#4b5563" text-anchor="middle">
+    De la Especificación Formal a la Verificación Matemática y la Operación con Gemelo Digital
+  </text>
+
+  <!-- ROW 1 (Fase de Diseño y Especificación Sintáctica) -->
+  <!-- Step 1 -->
+  <g transform="translate(50, 90)" filter="url(#shadow)">
+    <rect width="210" height="95" rx="10" fill="#eef2ff" stroke="#4d4dff" stroke-width="2" />
+    <text x="105" y="28" font-size="14" font-weight="bold" fill="#1e1b4b" text-anchor="middle">1. Entender el Problema</text>
+    <text x="105" y="48" font-size="11" fill="#4b5563" text-anchor="middle">• Requisitos de planta / negocio</text>
+    <text x="105" y="65" font-size="11" fill="#4b5563" text-anchor="middle">• Dependencias y restricciones</text>
+    <text x="105" y="82" font-size="11" fill="#4b5563" text-anchor="middle">• Identificación de actores</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <line x1="260" y1="137" x2="295" y2="137" stroke="#4d4dff" stroke-width="2.5" marker-end="url(#arrow)" />
+
+  <!-- Step 2 -->
+  <g id="step2" transform="translate(305, 90)" filter="url(#shadow)">
+    <rect width="210" height="95" rx="10" fill="#eef2ff" stroke="#4d4dff" stroke-width="2" />
+    <text x="105" y="28" font-size="14" font-weight="bold" fill="#1e1b4b" text-anchor="middle">2. Construir Modelos (RdP)</text>
+    <text x="105" y="48" font-size="11" fill="#4b5563" text-anchor="middle">• Lugares (Estados/Recursos)</text>
+    <text x="105" y="65" font-size="11" fill="#4b5563" text-anchor="middle">• Transiciones (Actividades)</text>
+    <text x="105" y="82" font-size="11" fill="#4b5563" text-anchor="middle">• Concurrencia y Sincronización</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <line x1="515" y1="137" x2="550" y2="137" stroke="#4d4dff" stroke-width="2.5" marker-end="url(#arrow)" />
+
+  <!-- Step 3 -->
+  <g transform="translate(560, 90)" filter="url(#shadow)">
+    <rect width="210" height="95" rx="10" fill="#eef2ff" stroke="#4d4dff" stroke-width="2" />
+    <text x="105" y="28" font-size="14" font-weight="bold" fill="#1e1b4b" text-anchor="middle">3. Codificar Formalismos</text>
+    <text x="105" y="48" font-size="11" fill="#4b5563" text-anchor="middle">• Formalismo RdP + Ontología</text>
+    <text x="105" y="65" font-size="11" fill="#4b5563" text-anchor="middle">• Estructura YAML / JSON</text>
+    <text x="105" y="82" font-size="11" fill="#4b5563" text-anchor="middle">• Tipado de Tokens y Recursos</text>
+  </g>
+
+  <!-- Arrow 3 -> 4 -->
+  <line x1="770" y1="137" x2="805" y2="137" stroke="#ea580c" stroke-width="2.5" marker-end="url(#arrow-orange)" />
+
+  <!-- Step 4 -->
+  <g transform="translate(815, 90)" filter="url(#shadow)">
+    <rect width="235" height="95" rx="10" fill="#fff7ed" stroke="#ea580c" stroke-width="2" />
+    <text x="117" y="28" font-size="14" font-weight="bold" fill="#9a3412" text-anchor="middle">4. Validar Código (PDA)</text>
+    <text x="117" y="48" font-size="11" fill="#7c2d12" text-anchor="middle">• Validación Sintáctica Formal</text>
+    <text x="117" y="65" font-size="11" fill="#7c2d12" text-anchor="middle">• Gramática y anidamientos</text>
+    <text x="117" y="82" font-size="11" font-weight="bold" fill="#c2410c" text-anchor="middle">[ Motor PDA - Clase 10 ]</text>
+  </g>
+
+  <!-- Arrow 4 -> 5 (Down) -->
+  <path d="M 932 185 L 932 225" fill="none" stroke="#ea580c" stroke-width="2.5" marker-end="url(#arrow-orange)" />
+
+  <!-- ROW 2 (Semántica, Verificación y Run-Time) -->
+  <!-- Step 5 -->
+  <g transform="translate(815, 235)" filter="url(#shadow)">
+    <rect width="235" height="95" rx="10" fill="#fff7ed" stroke="#ea580c" stroke-width="2" />
+    <text x="117" y="28" font-size="14" font-weight="bold" fill="#9a3412" text-anchor="middle">5. Validar Completitud</text>
+    <text x="117" y="48" font-size="11" fill="#7c2d12" text-anchor="middle">• Validación Semántica Ontología</text>
+    <text x="117" y="65" font-size="11" fill="#7c2d12" text-anchor="middle">• Recursos requeridos vs provistos</text>
+    <text x="117" y="82" font-size="11" fill="#7c2d12" text-anchor="middle">• Parámetros e interfaces listos</text>
+  </g>
+
+  <!-- Arrow 5 -> 6 (Left) -->
+  <line x1="815" y1="282" x2="780" y2="282" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrow-red)" />
+
+  <!-- Step 6 -->
+  <g id="step6" transform="translate(560, 235)" filter="url(#shadow)">
+    <rect width="210" height="95" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="2" />
+    <text x="105" y="28" font-size="14" font-weight="bold" fill="#991b1b" text-anchor="middle">6. Verificar Especificación</text>
+    <text x="105" y="48" font-size="11" fill="#7f1d1d" text-anchor="middle">• Árbol de Alcance / Cobertura</text>
+    <text x="105" y="65" font-size="11" fill="#7f1d1d" text-anchor="middle">• Soundness, Acotamiento, Liveness</text>
+    <text x="105" y="82" font-size="11" font-weight="bold" fill="#b91c1c" text-anchor="middle">[ Clase 12-A ]</text>
+  </g>
+
+  <!-- Feedback Loop (6 -> 2/1 if FAILS) -->
+  <path d="M 665 235 C 665 195, 450 195, 410 190" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="6,4" marker-end="url(#arrow-red)" />
+  <rect x="460" y="180" width="160" height="22" rx="4" fill="#fee2e2" stroke="#dc2626" stroke-width="1" />
+  <text x="540" y="195" font-size="10" font-weight="bold" fill="#991b1b" text-anchor="middle">¡Si falla: Regresar a 1 o 2!</text>
+
+  <!-- Arrow 6 -> 7 (OK) -->
+  <line x1="560" y1="282" x2="525" y2="282" stroke="#16a34a" stroke-width="2.5" marker-end="url(#arrow-green)" />
+  <text x="542" y="274" font-size="11" font-weight="bold" fill="#16a34a" text-anchor="middle">Sound</text>
+
+  <!-- Step 7 -->
+  <g transform="translate(305, 235)" filter="url(#shadow)">
+    <rect width="210" height="95" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="2" />
+    <text x="105" y="28" font-size="14" font-weight="bold" fill="#14532d" text-anchor="middle">7. Desplegar (Deploy)</text>
+    <text x="105" y="48" font-size="11" fill="#166534" text-anchor="middle">• Inyección de contrato al motor</text>
+    <text x="105" y="65" font-size="11" fill="#166534" text-anchor="middle">• Configuración de enlaces IoT/UI</text>
+    <text x="105" y="82" font-size="11" fill="#166534" text-anchor="middle">• Inicialización de marcado M0</text>
+  </g>
+
+  <!-- Arrow 7 -> 8 -->
+  <line x1="305" y1="282" x2="270" y2="282" stroke="#4d4dff" stroke-width="2.5" marker-end="url(#arrow)" />
+
+  <!-- Step 8 -->
+  <g transform="translate(50, 235)" filter="url(#shadow)">
+    <rect width="210" height="95" rx="10" fill="#e0e7ff" stroke="#4338ca" stroke-width="2.5" />
+    <text x="105" y="28" font-size="14" font-weight="bold" fill="#312e81" text-anchor="middle">8. Usar el Sistema</text>
+    <text x="105" y="48" font-size="11" font-weight="bold" fill="#1e1b4b" text-anchor="middle">• Planificar (Lead time / Ruta)</text>
+    <text x="105" y="65" font-size="11" font-weight="bold" fill="#1e1b4b" text-anchor="middle">• Supervisar (Triggers / Mk)</text>
+    <text x="105" y="82" font-size="11" font-weight="bold" fill="#1e1b4b" text-anchor="middle">• Diagnosticar (Causas) [12-B]</text>
+  </g>
+
+  <!-- Bottom Legend / Summary -->
+  <rect x="50" y="355" width="1000" height="55" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" />
+  <text x="550" y="376" font-size="12" fill="#334155" text-anchor="middle">
+    <tspan font-weight="bold">Garantía de Cero Defectos:</tspan> La verificación matemática y semántica en los pasos 4, 5 y 6 asegura que ningún flujo defectuoso llegue a ejecución.
+  </text>
+  <text x="550" y="396" font-size="11" fill="#64748b" text-anchor="middle">
+    El motor en el paso 8 (Fénix) opera con certidumbre total, desambiguando eventos y aislando demoras por recursos o calidad de insumos.
+  </text>
+</svg>
