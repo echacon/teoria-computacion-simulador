@@ -58,11 +58,11 @@ El repositorio incluye motores ejecutables correspondientes a cada bloque formal
 
 En la carpeta [`slides/`](./slides/) se encuentran las presentaciones oficiales del curso en PDF (16:9):
 
-* [Clase 10: El Motor PDA y Validación de Especificaciones](./slides/clase_10_motor_pda.pdf)
-* [Clase 11-A: Redes de Petri y Lenguajes Concurrentes](./slides/clase_11A_petri.pdf)
-* [Clase 11-B: Subclases, Fuentes, Temporización y Triggers en Fénix](./slides/clase_11B_petri.pdf)
-* [Clase 12-A: Verificación Formal de Workflows: El Análisis Previo (Soundness)](./slides/clase_12A_petri.pdf)
-* [Clase 12-B: El Motor en Acción: Planificación, Supervisión y Diagnóstico de Demoras](./slides/clase_12B_petri.pdf)
+* [Clase 10: El Motor PDA y Validación de Especificaciones](./slides/sesion10_motor_pda.pdf)
+* [Clase 11-A: Redes de Petri y Lenguajes Concurrentes](./slides/sesion11A_petri.pdf)
+* [Clase 11-B: Subclases, Fuentes, Temporización y Triggers en Fénix](./slides/sesion11B_petri.pdf)
+* [Clase 12-A: Verificación Formal de Workflows: El Análisis Previo (Soundness)](./slides/sesion12A_petri.pdf)
+* [Clase 12-B: El Motor en Acción: Planificación, Supervisión y Diagnóstico de Demoras](./slides/sesion12A_petri.pdf)
 
 ---
 
