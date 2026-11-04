@@ -62,7 +62,8 @@ En la carpeta [`slides/`](./slides/) se encuentran las presentaciones oficiales 
 * [Clase 11-A: Redes de Petri y Lenguajes Concurrentes](./slides/sesion11A_petri.pdf)
 * [Clase 11-B: Subclases, Fuentes, Temporización y Triggers en Fénix](./slides/sesion11B_petri.pdf)
 * [Clase 12-A: Verificación Formal de Workflows: El Análisis Previo (Soundness)](./slides/sesion12A_petri.pdf)
-* [Clase 12-B: El Motor en Acción: Planificación, Supervisión y Diagnóstico de Demoras](./slides/sesion12A_petri.pdf)
+* [Clase 12-B: El Motor en Acción: Planificación, Supervisión y Diagnóstico de Demoras](./slides/sesion12B_petri.pdf)
+* [Clase 13: Anatomía del Motor de Redes de Petri frente a DFA y PDA](./slides/sesion13_motor_petri.pdf)
 
 ---
 
