@@ -1,0 +1,168 @@
+# ==============================================================================
+# ESPECIFICACIÓN DE RED DE PETRI SUPERVISADA (SCT / RAMADGE-WONHAM + GMEC)
+# Sesión 14: Celda Flexible con Dos Líneas Concurrentes y Recursos Compartidos
+# ==============================================================================
+
+proceso: "Celda_Flexible_Doble_Recurso_SCT"
+version: "1.0"
+descripcion: "Dos líneas concurrentes (A y B) compitiendo en orden inverso por R1 y R2 con prevención de Deadlock mediante Lugares Monitores GMEC"
+
+# ------------------------------------------------------------------------------
+# 1. LUGARES (P): Estados de Proceso y Recursos Compartidos
+# ------------------------------------------------------------------------------
+lugares:
+  # Línea A: Requiere R1 en la Etapa 1 y luego R2 en la Etapa 2 antes de soltar R1
+  - id: "p_A0"
+    nombre: "Orden_A_Lista"
+    tipo: "proceso"
+    tokens_iniciales: 1
+    descripcion: "Orden de producción A en bandeja de entrada"
+
+  - id: "p_A1"
+    nombre: "A_Etapa_1_Con_R1"
+    tipo: "proceso"
+    tokens_iniciales: 0
+    descripcion: "Línea A ejecutando Etapa 1 (retiene R1)"
+
+  - id: "p_A2"
+    nombre: "A_Etapa_2_Con_R1_R2"
+    tipo: "proceso"
+    tokens_iniciales: 0
+    descripcion: "Línea A ejecutando trasvase/ensamble con R1 y R2"
+
+  - id: "p_A_fin"
+    nombre: "Orden_A_Completada"
+    tipo: "proceso"
+    tokens_iniciales: 0
+    descripcion: "Sumidero exitoso de la Línea A"
+
+  # Línea B: Requiere R2 en la Etapa 1 y luego R1 en la Etapa 2 antes de soltar R2
+  - id: "p_B0"
+    nombre: "Orden_B_Lista"
+    tipo: "proceso"
+    tokens_iniciales: 1
+    descripcion: "Orden de producción B en bandeja de entrada"
+
+  - id: "p_B1"
+    nombre: "B_Etapa_1_Con_R2"
+    tipo: "proceso"
+    tokens_iniciales: 0
+    descripcion: "Línea B ejecutando Etapa 1 (retiene R2)"
+
+  - id: "p_B2"
+    nombre: "B_Etapa_2_Con_R2_R1"
+    tipo: "proceso"
+    tokens_iniciales: 0
+    descripcion: "Línea B ejecutando trasvase/ensamble con R2 y R1"
+
+  - id: "p_B_fin"
+    nombre: "Orden_B_Completada"
+    tipo: "proceso"
+    tokens_iniciales: 0
+    descripcion: "Sumidero exitoso de la Línea B"
+
+  # Recursos Físicos Compartidos
+  - id: "R1_libre"
+    nombre: "Robot_R1_Disponible"
+    tipo: "recurso"
+    tokens_iniciales: 1
+    descripcion: "Capacidad disponible del Robot Manipulador R1"
+
+  - id: "R2_libre"
+    nombre: "Estacion_R2_Disponible"
+    tipo: "recurso"
+    tokens_iniciales: 1
+    descripcion: "Capacidad disponible de la Estación de Proceso R2"
+
+# ------------------------------------------------------------------------------
+# 2. TRANSICIONES (T): Eventos Controlables (Sigma_c) e Incontrolables (Sigma_uc)
+# ------------------------------------------------------------------------------
+transiciones:
+  # --- Línea A ---
+  - id: "t_A1"
+    nombre: "Iniciar_Etapa1_A"
+    trigger: "INICIAR_A"
+    controlable: true      # Sigma_c: El supervisor puede retener la admisión de A
+    duracion_nominal: 10
+
+  - id: "t_A2"
+    nombre: "Avanzar_Etapa2_A"
+    trigger: "AVANZAR_A"
+    controlable: true      # Sigma_c: Toma R2 manteniendo R1
+    duracion_nominal: 15
+
+  - id: "t_A3"
+    nombre: "Finalizar_Orden_A"
+    trigger: "FIN_A"
+    controlable: false     # Sigma_uc: Fin físico de operación (Incontrolable)
+    duracion_nominal: 5
+
+  # --- Línea B ---
+  - id: "t_B1"
+    nombre: "Iniciar_Etapa1_B"
+    trigger: "INICIAR_B"
+    controlable: true      # Sigma_c: El supervisor puede retener la admisión de B
+    duracion_nominal: 10
+
+  - id: "t_B2"
+    nombre: "Avanzar_Etapa2_B"
+    trigger: "AVANZAR_B"
+    controlable: true      # Sigma_c: Toma R1 manteniendo R2
+    duracion_nominal: 15
+
+  - id: "t_B3"
+    nombre: "Finalizar_Orden_B"
+    trigger: "FIN_B"
+    controlable: false     # Sigma_uc: Fin físico de operación (Incontrolable)
+    duracion_nominal: 5
+
+# ------------------------------------------------------------------------------
+# 3. ARCOS (F): Pre y Post Condiciones de la Planta Libre G
+# ------------------------------------------------------------------------------
+arcos:
+  # Flujo de la Línea A (Toma R1 en t_A1, luego R2 en t_A2, libera ambos en t_A3)
+  - { de: "p_A0",     a: "t_A1",     peso: 1 }
+  - { de: "R1_libre", a: "t_A1",     peso: 1 }
+  - { de: "t_A1",     a: "p_A1",     peso: 1 }
+
+  - { de: "p_A1",     a: "t_A2",     peso: 1 }
+  - { de: "R2_libre", a: "t_A2",     peso: 1 }
+  - { de: "t_A2",     a: "p_A2",     peso: 1 }
+
+  - { de: "p_A2",     a: "t_A3",     peso: 1 }
+  - { de: "t_A3",     a: "p_A_fin",  peso: 1 }
+  - { de: "t_A3",     a: "R1_libre", peso: 1 }
+  - { de: "t_A3",     a: "R2_libre", peso: 1 }
+
+  # Flujo de la Línea B (Toma R2 en t_B1, luego R1 en t_B2, libera ambos en t_B3)
+  - { de: "p_B0",     a: "t_B1",     peso: 1 }
+  - { de: "R2_libre", a: "t_B1",     peso: 1 }
+  - { de: "t_B1",     a: "p_B1",     peso: 1 }
+
+  - { de: "p_B1",     a: "t_B2",     peso: 1 }
+  - { de: "R1_libre", a: "t_B2",     peso: 1 }
+  - { de: "t_B2",     a: "p_B2",     peso: 1 }
+
+  - { de: "p_B2",     a: "t_B3",     peso: 1 }
+  - { de: "t_B3",     a: "p_B_fin",  peso: 1 }
+  - { de: "t_B3",     a: "R1_libre", peso: 1 }
+  - { de: "t_B3",     a: "R2_libre", peso: 1 }
+
+# ------------------------------------------------------------------------------
+# 4. ESTADOS MARCADOS DE ÉXITO (Lenguaje Marcado L_m(S/G))
+# ------------------------------------------------------------------------------
+marcados_exito:
+  p_A_fin: 1
+  p_B_fin: 1
+
+# ------------------------------------------------------------------------------
+# 5. SUPERVISORES GMEC (Síntesis Automática por Invariantes de Lugar)
+#    Restricción: L * M_p <= b   ===>   M(p_A1) + M(p_B1) <= 1
+# ------------------------------------------------------------------------------
+supervisores_gmec:
+  - id: "P_sup_antideadlock"
+    descripcion: "Evita que Línea A retenga R1 en p_A1 y Línea B retenga R2 en p_B1 simultáneamente"
+    pesos_L:
+      p_A1: 1
+      p_B1: 1
+    cota_b: 1

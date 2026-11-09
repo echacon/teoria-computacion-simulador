@@ -6,13 +6,14 @@ Esta plataforma interactiva y compendio didáctico están diseñados para el cur
 
 ## 🌟 Características de la Plataforma Interactiva
 
-El simulador web (SPA) está estructurado en 4 módulos progresivos:
+El simulador web (SPA) está estructurado en 6 módulos progresivos:
 
 1. **01. Combinatorio & Decisiones:** Simulación de funciones estáticas sin estado (\(y = x \cdot b\)) y lógica condicional si-entonces.
 2. **02. Autómatas Finitos (DFA):** Procesamiento de cadenas binarias paso a paso sobre un grafo de estados interactivo.
 3. **03. Autómatas de Pila (PDA):** Representación del reconocimiento de lenguajes libres de contexto con visualización animada de una **Pila física (LIFO)**.
 4. **04. Procesos Cooperantes (Concurrencia & Workflows):** Simulación de paso de mensajes síncronos entre procesos.
-5. **Lab. Recurso Único (DFA):** Simulador interactivo del ciclo operacional de una Estación de Pintura, que lanza errores de transiciones y permite descargar la especificación YAML.
+5. **05. Redes de Petri & SCT (Control Supervisor):** Simulación algebraica interactiva de Redes de Petri ($M_{k+1} = M_k + C \cdot u_k$) con recursos compartidos ($R_1, R_2$), demostración de *deadlock* circular en lazo abierto y prevención mediante síntesis de **Lugar Monitor GMEC** ($C_c = -L \cdot C_p$).
+6. **Lab. Recurso Único (DFA):** Simulador interactivo del ciclo operacional de una Estación de Pintura, que lanza errores de transiciones y permite descargar la especificación YAML.
 
 ---
 
@@ -46,11 +47,15 @@ El repositorio incluye motores ejecutables correspondientes a cada bloque formal
 * 🟠 **Motor PDA (Semanas 7-9 - *Clase 10*):**
   * `recurso_pda.py` y `recurso_pda.yaml`: Autómata de pila (LIFO) para validación de jerarquías y sub-holones recursivos.
   * Ejecución: `python recurso_pda.py`
-* 🔵 **Simulador y Diagnóstico de Redes de Petri (Semanas 11-12 - *Clases 11 y 12*):**
+* 🔵 **Simulador y Diagnóstico de Redes de Petri (Semanas 11-13 - *Clases 11 a 13*):**
   * `recurso_petri.py` y `recurso_petri.yaml`: Motor formal algebraico ($C = I^+ - I^-$, $M_{k+1} = M_k + C \cdot u$).
   * Despacho de triggers con determinismo por marcado.
   * Simula 3 escenarios: caso nominal, demora por falta de recursos (cola), y demora por calidad de insumos defectuosa (lazo de retrabajo).
   * Ejecución: `python recurso_petri.py`
+* 🟣 **Control Supervisor Descentralizado SCT y Monitores GMEC (Semana 14 - *Clase 14*):**
+  * `supervisor_sct.py` y `supervisor_sct.yaml`: Extiende el motor de Redes de Petri con la teoría de Ramadge-Wonham ($\Sigma = \Sigma_c \dot\cup \Sigma_{uc}$) y la síntesis algebraica de Lugares Monitores por invariantes ($L \cdot M_p \le b \implies C_c = -L \cdot C_p, M_{c0} = b - L \cdot M_{p0}$).
+  * Compara en vivo la planta en lazo abierto $G$ (que cae en *deadlock* circular por disputa de $R_1, R_2$) frente al sistema supervisado $S/G$ (*non-blocking*, $\overline{L_m(S/G)} = L(S/G)$).
+  * Ejecución: `python supervisor_sct.py`
 
 ---
 
@@ -64,6 +69,7 @@ En la carpeta [`slides/`](./slides/) se encuentran las presentaciones oficiales 
 * [Clase 12-A: Verificación Formal de Workflows: El Análisis Previo (Soundness)](./slides/sesion12A_petri.pdf)
 * [Clase 12-B: El Motor en Acción: Planificación, Supervisión y Diagnóstico de Demoras](./slides/sesion12B_petri.pdf)
 * [Clase 13: Anatomía del Motor de Redes de Petri frente a DFA y PDA](./slides/sesion13_motor_petri.pdf)
+* [Clase 14: Control Supervisor Descentralizado (SCT): Síntesis de Supervisores y Prevención de Deadlocks](./slides/sesion14_sct.pdf)
 
 ---
 

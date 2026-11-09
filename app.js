@@ -2,6 +2,7 @@ import { initModule1, destroyModule1 } from './module1.js';
 import { initModule2, destroyModule2 } from './module2.js';
 import { initModule3, destroyModule3 } from './module3.js';
 import { initModule4, destroyModule4 } from './module4.js';
+import { initModule5, destroyModule5 } from './module5.js';
 import { initModuleLab1, destroyModuleLab1 } from './module_lab1.js';
 
 // Base de datos de contenido teórico por módulo
@@ -90,6 +91,40 @@ const THEORY_CONTENT = {
             </div>
         </div>
     `,
+    module5: `
+        <div class="theory-section">
+            <h3>Redes de Petri & Control Supervisor (SCT)</h3>
+            <p>En este módulo unificamos la dinámica algebraica de <strong>Redes de Petri</strong> (Clases 11–13) con la <strong>Teoría de Control Supervisor (SCT)</strong> de Ramadge-Wonham (Clase 14).</p>
+            <div class="formula-box">
+                M<sub>k+1</sub> = M<sub>k</sub> + C &middot; u<sub>k</sub> &nbsp;&nbsp;|&nbsp;&nbsp; C = I<sup>+</sup> - I<sup>-</sup>
+            </div>
+            <p>El alfabeto de eventos se particiona en eventos <strong>controlables</strong> (&Sigma;<sub>c</sub>, que el supervisor puede deshabilitar) e <strong>incontrolables</strong> (&Sigma;<sub>uc</sub>, que la planta dispara autónomamente):</p>
+            <div class="formula-box">
+                &Sigma; = &Sigma;<sub>c</sub> &cup; &Sigma;<sub>uc</sub> &nbsp;&nbsp;(&Sigma;<sub>c</sub> &cap; &Sigma;<sub>uc</sub> = &empty;)
+            </div>
+        </div>
+        <div class="theory-section">
+            <h3>Abrazo Mortal (Deadlock Circular)</h3>
+            <p>Dos líneas concurrentes compiten en orden cruzado por los recursos compartidos <code>R1 (Robot)</code> y <code>R2 (AGV)</code>:</p>
+            <ul>
+                <li><strong>Línea 1:</strong> Adquiere <code>R1</code> en <code>t1_in</code> y luego requiere <code>R2</code> en <code>t1_av</code>.</li>
+                <li><strong>Línea 2:</strong> Adquiere <code>R2</code> en <code>t2_in</code> y luego requiere <code>R1</code> en <code>t2_av</code>.</li>
+            </ul>
+            <p>Si se disparan <code>t1_in</code> y <code>t2_in</code> simultáneamente en lazo abierto, el marcado alcanza <code>p1_r1=1, p2_r2=1, r1=0, r2=0</code>: <strong>bloqueo circular total</strong>.</p>
+        </div>
+        <div class="theory-section">
+            <h3>Síntesis de Lugar Monitor (GMEC)</h3>
+            <p>Para imponer la restricción lineal de seguridad (GMEC):</p>
+            <div class="formula-box">
+                L &middot; M<sub>p</sub> &le; b &nbsp;&rArr;&nbsp; M(p1_r1) + M(p2_r2) &le; 1
+            </div>
+            <p>Sintetizamos algebraicamente un <strong>Lugar Monitor</strong> <code>p_sup</code> cuya fila de incidencia y marcado inicial son:</p>
+            <div class="formula-box">
+                C<sub>c</sub> = -L &middot; C<sub>p</sub> , &nbsp;&nbsp; M<sub>c0</sub> = b - L &middot; M<sub>p0</sub> = 1
+            </div>
+            <p>Esto garantiza que el sistema en lazo cerrado <code>S/G</code> sea <strong>no bloqueante (Non-blocking)</strong> y <strong>máximamente permisivo</strong>.</p>
+        </div>
+    `,
     module_lab1: `
         <div class="theory-section">
             <h3>Práctica de Laboratorio 1</h3>
@@ -165,6 +200,10 @@ function switchTab(targetModuleId) {
         case 'module4':
             appState.activeInitializer = initModule4;
             appState.activeDestroyer = destroyModule4;
+            break;
+        case 'module5':
+            appState.activeInitializer = initModule5;
+            appState.activeDestroyer = destroyModule5;
             break;
         case 'module_lab1':
             appState.activeInitializer = initModuleLab1;
